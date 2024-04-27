@@ -6,6 +6,7 @@ import (
 	pb "ExploriteGateway/pkg/pb/admin"
 	"ExploriteGateway/pkg/utils/models"
 	"context"
+	"strconv"
 
 	"google.golang.org/grpc"
 )
@@ -68,21 +69,49 @@ func (ad *adminClient) AdminLogin(adminDetails models.AdminLogin) (models.TokenA
 	}, nil
 }
 func (ad *adminClient) GetUsers(page int) ([]models.UserDetailsAtAdmin, error) {
-    res, err := ad.Client.GetUsers(context.Background(), &pb.GetUsersRequest{Page: int32(page)})
-    if err != nil {
-        return nil, err
-    }
+	res, err := ad.Client.GetUsers(context.Background(), &pb.GetUsersRequest{Page: int32(page)})
+	if err != nil {
+		return nil, err
+	}
 
-    var userDetails []models.UserDetailsAtAdmin
-    for _, user := range res.Users {
-        userDetails = append(userDetails, models.UserDetailsAtAdmin{
-            Id:          int(user.Id),
-            Name:        user.Name,
-            Email:       user.Email,
-            Phone:       user.Phone,
-            BlockStatus: user.BlockStatus,
-        })
-    }
+	var userDetails []models.UserDetailsAtAdmin
+	for _, user := range res.Users {
+		userDetails = append(userDetails, models.UserDetailsAtAdmin{
+			Id:          int(user.Id),
+			Name:        user.Name,
+			Email:       user.Email,
+			Phone:       user.Phone,
+			BlockStatus: user.BlockStatus,
+		})
+	}
 
-    return userDetails, nil
+	return userDetails, nil
+}
+func (ad *adminClient) BlockUser(id string) error {
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	_, err = ad.Client.BlockUser(context.Background(), &pb.BlockUserRequest{
+		UserId: userId,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (ad *adminClient) UnBlockUser(id string) error {
+	userId, err := strconv.ParseUint(id, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	_, err = ad.Client.UnBlockUser(context.Background(), &pb.UnBlockUserRequest{
+		UserId: userId,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }

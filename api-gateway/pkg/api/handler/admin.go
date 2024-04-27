@@ -80,3 +80,31 @@ func (ad *AdminHandler) GetUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, successRes)
 
 }
+func (ad *AdminHandler) BlockUser(c *gin.Context) {
+
+	id := c.Query("id")
+	err := ad.GRPC_Client.BlockUser(id)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "user could not be blocked", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "Successfully blocked the user", nil, nil)
+	c.JSON(http.StatusOK, successRes)
+
+}
+func (ad *AdminHandler) UnBlockUser(c *gin.Context) {
+
+	id := c.Query("id")
+	err := ad.GRPC_Client.UnBlockUser(id)
+
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "user could not be unblocked", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "Successfully unblocked the user", nil, nil)
+	c.JSON(http.StatusOK, successRes)
+}

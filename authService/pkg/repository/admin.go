@@ -6,6 +6,7 @@ import (
 	"authservice/pkg/utils/models"
 	"errors"
 	"fmt"
+	"strconv"
 
 	//"strconv"
 
@@ -73,38 +74,38 @@ func (ad *adminRepository) GetUsers(page int) ([]models.UserDetailsAtAdmin, erro
 	return userDetails, nil
 }
 
-// func (ad *adminRepository) GetUserByID(id string) (domain.Users, error) {
+func (ad *adminRepository) GetUserByID(id string) (domain.Users, error) {
 
-// 	user_id, err := strconv.Atoi(id)
-// 	if err != nil {
-// 		return domain.Users{}, err
-// 	}
+	user_id, err := strconv.Atoi(id)
+	if err != nil {
+		return domain.Users{}, err
+	}
 
-// 	var count int
-// 	if err := ad.DB.Raw("select count(*) from users where id = ?", user_id).Scan(&count).Error; err != nil {
-// 		return domain.Users{}, err
-// 	}
-// 	if count < 1 {
-// 		return domain.Users{}, errors.New("user for the given id does not exist")
-// 	}
+	var count int
+	if err := ad.DB.Raw("select count(*) from users where id = ?", user_id).Scan(&count).Error; err != nil {
+		return domain.Users{}, err
+	}
+	if count < 1 {
+		return domain.Users{}, errors.New("user for the given id does not exist")
+	}
 
-// 	query := fmt.Sprintf("select * from users where id = '%d'", user_id)
-// 	var userDetails domain.Users
+	query := fmt.Sprintf("select * from users where id = '%d'", user_id)
+	var userDetails domain.Users
 
-// 	if err := ad.DB.Raw(query).Scan(&userDetails).Error; err != nil {
-// 		return domain.Users{}, err
-// 	}
+	if err := ad.DB.Raw(query).Scan(&userDetails).Error; err != nil {
+		return domain.Users{}, err
+	}
 
-// 	return userDetails, nil
-// }
+	return userDetails, nil
+}
 
-// func (ad *adminRepository) UpdateBlockUserByID(user domain.Users) error {
+func (ad *adminRepository) UpdateBlockUserByID(user domain.Users) error {
 
-// 	err := ad.DB.Exec("update users set blocked = ? where id = ?", user.Blocked, user.ID).Error
-// 	if err != nil {
-// 		return err
-// 	}
+	err := ad.DB.Exec("update users set blocked = ? where id = ?", user.Blocked, user.ID).Error
+	if err != nil {
+		return err
+	}
 
-// 	return nil
+	return nil
 
-// }
+}

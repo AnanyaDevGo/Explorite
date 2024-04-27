@@ -6,6 +6,7 @@ import (
 	"authservice/pkg/utils/models"
 	"context"
 	"fmt"
+	"strconv"
 )
 
 type AdminServer struct {
@@ -91,5 +92,37 @@ func (as *AdminServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*
 
 	return &pb.GetUsersResponse{
 		Users: userDetails,
+	}, nil
+}
+
+func (as *AdminServer) BlockUser(ctx context.Context, req *pb.BlockUserRequest) (*pb.BlockUserResponse, error) {
+	userID := strconv.FormatUint(req.UserId, 10)
+
+	err := as.adminUseCase.BlockUser(userID)
+	if err != nil {
+		return &pb.BlockUserResponse{
+			Success:      false,
+			ErrorMessage: err.Error(),
+		}, nil
+	}
+
+	return &pb.BlockUserResponse{
+		Success: true,
+	}, nil
+}
+
+func (as *AdminServer) UnBlockUser(ctx context.Context, req *pb.UnBlockUserRequest) (*pb.UnBlockUserResponse, error) {
+	userID := strconv.FormatUint(req.UserId, 10)
+
+	err := as.adminUseCase.BlockUser(userID)
+	if err != nil {
+		return &pb.UnBlockUserResponse{
+			Success:      false,
+			ErrorMessage: err.Error(),
+		}, nil
+	}
+
+	return &pb.UnBlockUserResponse{
+		Success: true,
 	}, nil
 }

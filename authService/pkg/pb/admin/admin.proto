@@ -8,6 +8,8 @@ service Admin{
     rpc AdminSignup(AdminSignupRequest) returns(AdminSignupResponse){};
     rpc AdminLogin(AdminLoginInRequest) returns (AdminLoginResponse){};
     rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {};
+    rpc BlockUser(BlockUserRequest) returns (BlockUserResponse) {};
+    rpc UnBlockUser(UnBlockUserRequest) returns (UnBlockUserResponse) {};
 }
 message AdminSignupRequest{
     string firstname=1;
@@ -54,4 +56,21 @@ message UserDetailsAtAdmin {
     string email = 3;
     string phone = 4;
     bool block_status = 5;
+}
+
+message BlockUserRequest {
+    uint64 user_id = 1;
+}
+
+message BlockUserResponse {
+    bool success = 1;
+    string error_message = 2;
+}
+message UnBlockUserRequest {
+    uint64 user_id = 1;
+}
+
+message UnBlockUserResponse {
+    bool success = 1;
+    string error_message = 2;
 }

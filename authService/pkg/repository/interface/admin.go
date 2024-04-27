@@ -10,6 +10,6 @@ type AdminRepository interface {
 	FindAdminByEmail(admin models.AdminLogin) (models.AdminSignUp, error)
 	CheckAdminExistsByEmail(email string) (*domain.Admin, error)
 	GetUsers(page int) ([]models.UserDetailsAtAdmin, error)
-	// GetUserByID(id string) (domain.Users, error)
-	// UpdateBlockUserByID(user domain.Users) error
+	GetUserByID(id string) (domain.Users, error)
+	UpdateBlockUserByID(user domain.Users) error
 }

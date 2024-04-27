@@ -100,24 +100,45 @@ func (ad *adminUseCase) GetUsers(page int) ([]models.UserDetailsAtAdmin, error) 
 
 }
 
-// func (ad *adminUseCase) BlockUser(id string) error {
+func (ad *adminUseCase) BlockUser(id string) error {
 
-// 	user, err := ad.adminRepository.GetUserByID(id)
-// 	if err != nil {
-// 		return err
-// 	}
+	user, err := ad.adminRepository.GetUserByID(id)
+	if err != nil {
+		return err
+	}
 
-// 	if user.Blocked {
-// 		return errors.New("already blocked")
-// 	} else {
-// 		user.Blocked = true
-// 	}
+	if user.Blocked {
+		return errors.New("already blocked")
+	} else {
+		user.Blocked = true
+	}
 
-// 	err = ad.adminRepository.UpdateBlockUserByID(user)
-// 	if err != nil {
-// 		return err
-// 	}
+	err = ad.adminRepository.UpdateBlockUserByID(user)
+	if err != nil {
+		return err
+	}
 
-// 	return nil
+	return nil
 
-// }
+}
+func (ad *adminUseCase) UnBlockUser(id string) error {
+
+	user, err := ad.adminRepository.GetUserByID(id)
+	if err != nil {
+		return err
+	}
+
+	if user.Blocked {
+		user.Blocked = false
+	} else {
+		return errors.New("already unblocked")
+	}
+
+	err = ad.adminRepository.UpdateBlockUserByID(user)
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}

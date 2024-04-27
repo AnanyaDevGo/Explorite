@@ -22,6 +22,8 @@ const (
 	Admin_AdminSignup_FullMethodName = "/admin.Admin/AdminSignup"
 	Admin_AdminLogin_FullMethodName  = "/admin.Admin/AdminLogin"
 	Admin_GetUsers_FullMethodName    = "/admin.Admin/GetUsers"
+	Admin_BlockUser_FullMethodName   = "/admin.Admin/BlockUser"
+	Admin_UnBlockUser_FullMethodName = "/admin.Admin/UnBlockUser"
 )
 
 // AdminClient is the client API for Admin service.
@@ -31,6 +33,8 @@ type AdminClient interface {
 	AdminSignup(ctx context.Context, in *AdminSignupRequest, opts ...grpc.CallOption) (*AdminSignupResponse, error)
 	AdminLogin(ctx context.Context, in *AdminLoginInRequest, opts ...grpc.CallOption) (*AdminLoginResponse, error)
 	GetUsers(ctx context.Context, in *GetUsersRequest, opts ...grpc.CallOption) (*GetUsersResponse, error)
+	BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*BlockUserResponse, error)
+	UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*UnBlockUserResponse, error)
 }
 
 type adminClient struct {
@@ -68,6 +72,24 @@ func (c *adminClient) GetUsers(ctx context.Context, in *GetUsersRequest, opts ..
 	return out, nil
 }
 
+func (c *adminClient) BlockUser(ctx context.Context, in *BlockUserRequest, opts ...grpc.CallOption) (*BlockUserResponse, error) {
+	out := new(BlockUserResponse)
+	err := c.cc.Invoke(ctx, Admin_BlockUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adminClient) UnBlockUser(ctx context.Context, in *UnBlockUserRequest, opts ...grpc.CallOption) (*UnBlockUserResponse, error) {
+	out := new(UnBlockUserResponse)
+	err := c.cc.Invoke(ctx, Admin_UnBlockUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdminServer is the server API for Admin service.
 // All implementations must embed UnimplementedAdminServer
 // for forward compatibility
@@ -75,6 +97,8 @@ type AdminServer interface {
 	AdminSignup(context.Context, *AdminSignupRequest) (*AdminSignupResponse, error)
 	AdminLogin(context.Context, *AdminLoginInRequest) (*AdminLoginResponse, error)
 	GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error)
+	BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error)
+	UnBlockUser(context.Context, *UnBlockUserRequest) (*UnBlockUserResponse, error)
 	mustEmbedUnimplementedAdminServer()
 }
 
@@ -90,6 +114,12 @@ func (UnimplementedAdminServer) AdminLogin(context.Context, *AdminLoginInRequest
 }
 func (UnimplementedAdminServer) GetUsers(context.Context, *GetUsersRequest) (*GetUsersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUsers not implemented")
+}
+func (UnimplementedAdminServer) BlockUser(context.Context, *BlockUserRequest) (*BlockUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BlockUser not implemented")
+}
+func (UnimplementedAdminServer) UnBlockUser(context.Context, *UnBlockUserRequest) (*UnBlockUserResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnBlockUser not implemented")
 }
 func (UnimplementedAdminServer) mustEmbedUnimplementedAdminServer() {}
 
@@ -158,6 +188,42 @@ func _Admin_GetUsers_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Admin_BlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BlockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).BlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Admin_BlockUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).BlockUser(ctx, req.(*BlockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Admin_UnBlockUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UnBlockUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdminServer).UnBlockUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Admin_UnBlockUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdminServer).UnBlockUser(ctx, req.(*UnBlockUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Admin_ServiceDesc is the grpc.ServiceDesc for Admin service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +242,14 @@ var Admin_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUsers",
 			Handler:    _Admin_GetUsers_Handler,
+		},
+		{
+			MethodName: "BlockUser",
+			Handler:    _Admin_BlockUser_Handler,
+		},
+		{
+			MethodName: "UnBlockUser",
+			Handler:    _Admin_UnBlockUser_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
