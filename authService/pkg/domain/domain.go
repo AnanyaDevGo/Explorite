@@ -15,16 +15,16 @@ type TokenAdmin struct {
 }
 
 type User struct {
-	ID           uint   `json:"id" gorm:"uniquekey; not null"`
-	Firstname    string `json:"firstname" gorm:"validate:required"`
-	Lastname     string `json:"lastname" gorm:"validate:required"`
-	Email        string `json:"email" gorm:"validate:required"`
-	Password     string `json:"password" gorm:"validate:required"`
-	Username     string `json:"username"`
-	PhoneNumber  string `json:"phone_number"`
-	DateOfBirth  string `json:"date_of_birth"`
-	Gender       string `json:"gender"`
-	Bio          string `json:"bio"`
+	ID          uint   `json:"id" gorm:"uniquekey; not null"`
+	Firstname   string `json:"firstname" gorm:"validate:required"`
+	Lastname    string `json:"lastname" gorm:"validate:required"`
+	Email       string `json:"email" gorm:"validate:required"`
+	Password    string `json:"password" gorm:"validate:required"`
+	Username    string `json:"username"`
+	PhoneNumber string `json:"phone_number"`
+	DateOfBirth string `json:"date_of_birth"`
+	Gender      string `json:"gender"`
+	Bio         string `json:"bio"`
 }
 
 type TokenUser struct {

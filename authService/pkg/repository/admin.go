@@ -6,6 +6,7 @@ import (
 	"authservice/pkg/utils/models"
 	"errors"
 	"fmt"
+
 	//"strconv"
 
 	"gorm.io/gorm"
@@ -53,21 +54,25 @@ func (ad *adminRepository) FindAdminByEmail(admin models.AdminLogin) (models.Adm
 	}
 	return user, nil
 }
-
-
 func (ad *adminRepository) GetUsers(page int) ([]models.UserDetailsAtAdmin, error) {
 	if page == 0 {
 		page = 1
 	}
-	offset := (page - 1) * 2
+	offset := (page - 1) * 20
 	var userDetails []models.UserDetailsAtAdmin
 
-	if err := ad.DB.Raw("select id,name,email,phone,blocked from users limit ? offset ?", 20, offset).Scan(&userDetails).Error; err != nil {
+	query := `
+        SELECT id, CONCAT(firstname, ' ', lastname) AS name, email, phone_number, blocked
+        FROM users
+        LIMIT ? OFFSET ?
+    `
+	if err := ad.DB.Raw(query, 20, offset).Scan(&userDetails).Error; err != nil {
 		return []models.UserDetailsAtAdmin{}, err
 	}
 
 	return userDetails, nil
 }
+
 // func (ad *adminRepository) GetUserByID(id string) (domain.Users, error) {
 
 // 	user_id, err := strconv.Atoi(id)
