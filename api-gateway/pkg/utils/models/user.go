@@ -17,8 +17,8 @@ type UserLogin struct {
 }
 
 type UserDetailResponse struct {
+	ID          int    `json:"id"`
 	Email       string `json:"email" binding:"required" validate:"required,email"`
-	Password    string `json:"password" binding:"required" validate:"min=6,max=20"`
 	Firstname   string `json:"firstname" gorm:"validate:required"`
 	Lastname    string `json:"lastname" gorm:"validate:required"`
 	PhoneNumber string `json:"phone_number"`
@@ -43,4 +43,13 @@ type User struct {
 type TokenUser struct {
 	User  UserDetailResponse
 	Token string
+}
+type Users struct {
+	ID       uint   `json:"id" gorm:"unique;not null"`
+	Name     string `json:"name"`
+	Email    string `json:"email" validate:"email"`
+	Password string `json:"password" validate:"min=8,max=20"`
+	Phone    string `json:"phone"`
+	Blocked  bool   `json:"blocked" gorm:"default:false"`
+	Isadmin  bool   `json:"isadmin" gorm:"default:false;check:isadmin IN (true, false)"`
 }

@@ -6,6 +6,7 @@ import (
 	"ExploriteGateway/pkg/utils/response"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,7 +42,6 @@ func (ad *AdminHandler) AdminSignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, success)
 }
 
-
 func (ad *AdminHandler) LoginHandler(c *gin.Context) {
 	var adminDetails models.AdminLogin
 	if err := c.ShouldBindJSON(&adminDetails); err != nil {
@@ -58,4 +58,25 @@ func (ad *AdminHandler) LoginHandler(c *gin.Context) {
 	}
 	success := response.ClientResponse(http.StatusOK, "Admin authenticated successfully", admin, nil)
 	c.JSON(http.StatusOK, success)
+}
+func (ad *AdminHandler) GetUsers(c *gin.Context) {
+
+	pageStr := c.Query("page")
+	page, err := strconv.Atoi(pageStr)
+
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "page number not in right format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	users, err := ad.GRPC_Client.GetUsers(page)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "could not retrieve records", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+	successRes := response.ClientResponse(http.StatusOK, "Successfully retrieved the users", users, nil)
+	c.JSON(http.StatusOK, successRes)
+
 }

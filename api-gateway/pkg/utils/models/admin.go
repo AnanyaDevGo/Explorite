@@ -28,3 +28,10 @@ type TokenAdmin struct {
 	Admin AdminDetailsResponse
 	Token string
 }
+type UserDetailsAtAdmin struct {
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+	BlockStatus bool   `json:"block_status"`
+}

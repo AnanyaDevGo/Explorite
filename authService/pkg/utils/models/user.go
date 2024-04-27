@@ -1,6 +1,7 @@
 package models
 
 type UserSignup struct {
+	ID          uint   `json:"id"`
 	Email       string `json:"email" binding:"required" validate:"required,email"`
 	Password    string `json:"password" binding:"required" validate:"min=6,max=20"`
 	Firstname   string `json:"firstname" gorm:"validate:required"`
@@ -17,8 +18,8 @@ type UserLogin struct {
 }
 
 type UserDetailResponse struct {
+	ID          int    `json:"id"`
 	Email       string `json:"email" binding:"required" validate:"required,email"`
-	Password    string `json:"password" binding:"required" validate:"min=6,max=20"`
 	Firstname   string `json:"firstname" gorm:"validate:required"`
 	Lastname    string `json:"lastname" gorm:"validate:required"`
 	PhoneNumber string `json:"phone_number"`
@@ -43,4 +44,12 @@ type User struct {
 type TokenUser struct {
 	User  UserDetailResponse
 	Token string
+}
+
+type UserDetailsAtAdmin struct {
+	Id          int    `json:"id"`
+	Name        string `json:"name"`
+	Email       string `json:"email"`
+	Phone       string `json:"phone"`
+	BlockStatus bool   `json:"block_status"`
 }

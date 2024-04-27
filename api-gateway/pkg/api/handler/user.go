@@ -4,6 +4,7 @@ import (
 	interfaces "ExploriteGateway/pkg/client/interface"
 	"ExploriteGateway/pkg/utils/models"
 	"ExploriteGateway/pkg/utils/response"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -33,7 +34,8 @@ func (uh *UserHandler) UserSignUp(c *gin.Context) {
 
 	user, err := uh.GRPC_Client.UserSignUp(userDetails)
 	if err != nil {
-		errs := response.ClientResponse(http.StatusInternalServerError, "Cannot authenticate user", nil, err.Error())
+		anerr := errors.New("error in services")
+		errs := response.ClientResponse(http.StatusInternalServerError, "Cannot authenticate user", nil, anerr.Error())
 		c.JSON(http.StatusInternalServerError, errs)
 		return
 	}

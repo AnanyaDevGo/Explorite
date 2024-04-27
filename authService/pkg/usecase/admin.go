@@ -4,7 +4,7 @@ import (
 	"authservice/pkg/domain"
 	"authservice/pkg/helper"
 	interfaces "authservice/pkg/repository/interface"
-	services  "authservice/pkg/usecase/interface"
+	services "authservice/pkg/usecase/interface"
 	"authservice/pkg/utils/models"
 	"errors"
 	"fmt"
@@ -88,3 +88,36 @@ func (ad *adminUseCase) LoginHandler(admin models.AdminLogin) (*domain.TokenAdmi
 		Token: tokenString,
 	}, nil
 }
+
+func (ad *adminUseCase) GetUsers(page int) ([]models.UserDetailsAtAdmin, error) {
+
+	userDetails, err := ad.adminRepository.GetUsers(page)
+	if err != nil {
+		return []models.UserDetailsAtAdmin{}, err
+	}
+
+	return userDetails, nil
+
+}
+
+// func (ad *adminUseCase) BlockUser(id string) error {
+
+// 	user, err := ad.adminRepository.GetUserByID(id)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	if user.Blocked {
+// 		return errors.New("already blocked")
+// 	} else {
+// 		user.Blocked = true
+// 	}
+
+// 	err = ad.adminRepository.UpdateBlockUserByID(user)
+// 	if err != nil {
+// 		return err
+// 	}
+
+// 	return nil
+
+// }

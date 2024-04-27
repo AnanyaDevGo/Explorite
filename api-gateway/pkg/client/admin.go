@@ -67,3 +67,22 @@ func (ad *adminClient) AdminLogin(adminDetails models.AdminLogin) (models.TokenA
 		Token: admin.Token,
 	}, nil
 }
+func (ad *adminClient) GetUsers(page int) ([]models.UserDetailsAtAdmin, error) {
+    res, err := ad.Client.GetUsers(context.Background(), &pb.GetUsersRequest{Page: int32(page)})
+    if err != nil {
+        return nil, err
+    }
+
+    var userDetails []models.UserDetailsAtAdmin
+    for _, user := range res.Users {
+        userDetails = append(userDetails, models.UserDetailsAtAdmin{
+            Id:          int(user.Id),
+            Name:        user.Name,
+            Email:       user.Email,
+            Phone:       user.Phone,
+            BlockStatus: user.BlockStatus,
+        })
+    }
+
+    return userDetails, nil
+}

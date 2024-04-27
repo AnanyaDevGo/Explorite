@@ -30,12 +30,11 @@ message UserSignupResponse {
 message UserDetails {
     uint64 id = 1;
     string email = 2;
-    string password = 3;
-    string firstname = 4;
-    string lastname = 5;
-    string phone_number = 6;
-    string date_of_birth = 7;
-    string gender = 8;
+    string firstname = 3;
+    string lastname = 4;
+    string phone_number = 5;
+    string date_of_birth = 6;
+    string gender = 7;
 }
 
 message UserLoginRequest {

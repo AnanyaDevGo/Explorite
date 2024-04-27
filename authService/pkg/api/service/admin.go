@@ -68,3 +68,28 @@ func (ad *AdminServer) AdminLogin(ctx context.Context, Req *pb.AdminLoginInReque
 		Token:        admin.Token,
 	}, nil
 }
+
+func (as *AdminServer) GetUsers(ctx context.Context, req *pb.GetUsersRequest) (*pb.GetUsersResponse, error) {
+	page := int(req.Page)
+
+	users, err := as.adminUseCase.GetUsers((page))
+	if err != nil {
+		return nil, err
+	}
+
+	var userDetails []*pb.UserDetailsAtAdmin
+	for _, user := range users {
+		userID := int32(user.Id)
+		userDetails = append(userDetails, &pb.UserDetailsAtAdmin{
+			Id:          userID,
+			Name:        user.Name,
+			Email:       user.Email,
+			Phone:       user.Phone,
+			BlockStatus: user.BlockStatus,
+		})
+	}
+
+	return &pb.GetUsersResponse{
+		Users: userDetails,
+	}, nil
+}

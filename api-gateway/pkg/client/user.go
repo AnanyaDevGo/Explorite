@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc"
 
@@ -16,6 +17,8 @@ type userClient struct {
 }
 
 func NewUserClient(cfg config.Config) (interfaces.UserClient, error) {
+	fmt.Println("client")
+	fmt.Println("auth", cfg.ExploriteAuth)
 	grpcConnection, err := grpc.Dial(cfg.ExploriteAuth, grpc.WithInsecure())
 	if err != nil {
 		return nil, err
@@ -29,6 +32,7 @@ func NewUserClient(cfg config.Config) (interfaces.UserClient, error) {
 }
 
 func (uc *userClient) UserSignUp(userDetails models.UserSignup) (models.TokenUser, error) {
+	fmt.Println("usr", userDetails)
 	resp, err := uc.Client.UserSignUp(context.Background(), &pb.UserSignupRequest{
 		Email:       userDetails.Email,
 		Password:    userDetails.Password,
@@ -39,14 +43,15 @@ func (uc *userClient) UserSignUp(userDetails models.UserSignup) (models.TokenUse
 		Gender:      userDetails.Gender,
 		Bio:         userDetails.Bio,
 	})
+	fmt.Println("err", err)
 	if err != nil {
 		return models.TokenUser{}, err
 	}
-
+	fmt.Println("eeeeeeeeeeeeee", resp)
 	return models.TokenUser{
 		User: models.UserDetailResponse{
+			ID:          int(resp.User.Id),
 			Email:       resp.User.Email,
-			Password:    resp.User.Password,
 			Firstname:   resp.User.Firstname,
 			Lastname:    resp.User.Lastname,
 			PhoneNumber: resp.User.PhoneNumber,
@@ -68,8 +73,8 @@ func (uc *userClient) UserLogin(userDetails models.UserLogin) (models.TokenUser,
 
 	return models.TokenUser{
 		User: models.UserDetailResponse{
+			ID:          int(resp.User.Id),
 			Email:       resp.User.Email,
-			Password:    resp.User.Password,
 			Firstname:   resp.User.Firstname,
 			Lastname:    resp.User.Lastname,
 			PhoneNumber: resp.User.PhoneNumber,

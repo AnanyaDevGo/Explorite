@@ -18,6 +18,7 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 
 	router.POST("/admin/login", adminHandler.LoginHandler)
 	router.POST("/admin/signup", adminHandler.AdminSignUp)
+	router.GET("/admin/user/list", adminHandler.GetUsers)
 
 
 	router.POST("/user/signup", userHandler.UserSignUp)

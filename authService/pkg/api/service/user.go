@@ -5,6 +5,7 @@ import (
 	interfaces "authservice/pkg/usecase/interface"
 	"authservice/pkg/utils/models"
 	"context"
+	"fmt"
 )
 
 type UserServer struct {
@@ -18,7 +19,8 @@ func NewUserServer(useCase interfaces.UserUseCase) pb.UserServer {
 	}
 }
 
-func (us *UserServer) UserSignup(ctx context.Context, req *pb.UserSignupRequest) (*pb.UserSignupResponse, error) {
+func (us *UserServer) UserSignUp(ctx context.Context, req *pb.UserSignupRequest) (*pb.UserSignupResponse, error) {
+	fmt.Println("usrrrrrrrrrrrrrrrrrr", req)
 	userSignup := models.UserSignup{
 		Email:       req.Email,
 		Password:    req.Password,
@@ -35,8 +37,18 @@ func (us *UserServer) UserSignup(ctx context.Context, req *pb.UserSignupRequest)
 		return nil, err
 	}
 
+	fmt.Println("token user", tokenUser)
 	return &pb.UserSignupResponse{
 		Status: 201,
+		User: &pb.UserDetails{
+			Id: uint64(tokenUser.User.ID),
+			Email: tokenUser.User.Email,
+			Firstname: tokenUser.User.Firstname,
+			Lastname: tokenUser.User.Lastname,
+			PhoneNumber: tokenUser.User.PhoneNumber,
+			DateOfBirth: tokenUser.User.DateOfBirth,
+			Gender: tokenUser.User.Gender,
+		},
 		Token:  tokenUser.Token,
 	}, nil
 }
@@ -54,6 +66,15 @@ func (us *UserServer) UserLogin(ctx context.Context, req *pb.UserLoginRequest) (
 
 	return &pb.UserLoginResponse{
 		Status: 200,
+		User: &pb.UserDetails{
+			Id: uint64(tokenUser.User.ID),
+			Email: tokenUser.User.Email,
+			Firstname: tokenUser.User.Firstname,
+			Lastname: tokenUser.User.Lastname,
+			PhoneNumber: tokenUser.User.PhoneNumber,
+			DateOfBirth: tokenUser.User.DateOfBirth,
+			Gender: tokenUser.User.Gender,
+		},
 		Token:  tokenUser.Token,
 	}, nil
 }

@@ -7,6 +7,7 @@ option go_package = "./pkg/pb/admin";
 service Admin{
     rpc AdminSignup(AdminSignupRequest) returns(AdminSignupResponse){};
     rpc AdminLogin(AdminLoginInRequest) returns (AdminLoginResponse){};
+    rpc GetUsers(GetUsersRequest) returns (GetUsersResponse) {};
 }
 message AdminSignupRequest{
     string firstname=1;
@@ -19,6 +20,7 @@ message AdminSignupResponse{
     int64 status=1;
     AdminDetails adminDetails=2;
     string token=3;
+    string error=4;
 }
 
 message AdminDetails{
@@ -35,4 +37,21 @@ message AdminLoginResponse{
     int64 status=1;
     AdminDetails adminDetails=2;
     string token=3;
+    string error=4;
+}
+
+message GetUsersRequest {
+    int32 page = 1;
+}
+
+message GetUsersResponse {
+    repeated UserDetailsAtAdmin users = 1;
+}
+
+message UserDetailsAtAdmin {
+    int32 id = 1;
+    string name = 2;
+    string email = 3;
+    string phone = 4;
+    bool block_status = 5;
 }
