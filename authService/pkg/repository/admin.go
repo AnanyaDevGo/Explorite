@@ -63,7 +63,7 @@ func (ad *adminRepository) GetUsers(page int) ([]models.UserDetailsAtAdmin, erro
 	var userDetails []models.UserDetailsAtAdmin
 
 	query := `
-        SELECT id, CONCAT(firstname, ' ', lastname) AS name, email, phone_number, blocked
+        SELECT id, CONCAT(firstname, ' ', lastname) AS name, email, phone_number as phone, blocked as block_status
         FROM users
         LIMIT ? OFFSET ?
     `

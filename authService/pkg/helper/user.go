@@ -10,15 +10,15 @@ import (
 
 type authCustomClaimsUser struct {
 	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
 	Email     string `json:"email"`
+	ID        int    `json:"id"`
 	jwt.StandardClaims
 }
 
 func GenerateTokenUser(user models.UserDetailResponse) (string, error) {
 	claims := &authCustomClaimsUser{
+		ID:        user.ID,
 		Firstname: user.Firstname,
-		Lastname:  user.Lastname,
 		Email:     user.Email,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 48).Unix(),

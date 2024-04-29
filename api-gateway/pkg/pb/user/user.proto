@@ -7,6 +7,8 @@ option go_package = "./pkg/pb/user";
 service User {
     rpc UserSignUp(UserSignupRequest) returns (UserSignupResponse) {};
     rpc UserLogin(UserLoginRequest) returns (UserLoginResponse) {};
+    rpc AddProfile(AddProfileRequest) returns (AddProfileResponse); 
+    rpc GetProfile(GetProfileRequest) returns (GetProfileResponse); 
 }
 
 message UserSignupRequest {
@@ -47,4 +49,39 @@ message UserLoginResponse {
     UserDetails user = 2;
     string token = 3;
     string error = 4;
+}
+message AddProfileRequest {
+    int32 id = 1;
+    string name = 2;
+    string username = 3;
+    string email = 4;
+    string website = 5;
+    string location = 6;
+    string phone = 7;
+    string bio = 8;
+}
+
+message AddProfileResponse {
+    int64 status = 1;
+    string error = 2;
+}
+message GetProfileRequest {
+    int32 id = 1;
+}
+
+message GetProfileResponse {
+    int64 status = 1;
+    repeated UserProfile profiles = 2;
+    string error = 3;
+}
+
+message UserProfile {
+    uint64 id = 1;
+    string name = 2;
+    string username = 3;
+    string email = 4;
+    string website = 5;
+    string location = 6;
+    string phone = 7;
+    string bio = 8;
 }

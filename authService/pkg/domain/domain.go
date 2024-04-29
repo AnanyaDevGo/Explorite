@@ -41,3 +41,15 @@ type Users struct {
 	Blocked  bool   `json:"blocked" gorm:"default:false"`
 	Isadmin  bool   `json:"isadmin" gorm:"default:false;check:isadmin IN (true, false)"`
 }
+type UserProfile struct {
+	ID       uint   `json:"id" gorm:"unique;not null"`
+	UserId   int    `json:"user_id"`
+	Users    Users  `json:"-" gorm:"foreignkey:UserId"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email" validate:"email"`
+	Website  string `json:"website" validate:"website"`
+	Location string `json:"location"`
+	Phone    string `json:"phone"`
+	Bio      string `json:"bio"`
+}

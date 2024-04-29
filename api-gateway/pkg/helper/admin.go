@@ -2,10 +2,12 @@ package helper
 
 import (
 	"ExploriteGateway/pkg/utils/models"
+	"errors"
 	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type authCustomClaimsAdmin struct {
@@ -15,6 +17,14 @@ type authCustomClaimsAdmin struct {
 	jwt.StandardClaims
 }
 
+func PasswordHash(password string) (string, error) {
+	hashPassword, err := bcrypt.GenerateFromPassword([]byte(password), 10)
+	if err != nil {
+		return "", errors.New("internal server error")
+	}
+	hash := string(hashPassword)
+	return hash, nil
+}
 func GenerateTokenAdmin(admin models.AdminDetailsResponse) (string, error) {
 	claims := &authCustomClaimsAdmin{
 		Firstname: admin.Firstname,

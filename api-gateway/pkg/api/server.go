@@ -13,7 +13,6 @@ type ServerHTTP struct {
 }
 
 func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler) *ServerHTTP {
-
 	router := gin.New()
 	router.Use(gin.Logger())
 
@@ -23,25 +22,31 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	router.POST("/user/signup", userHandler.UserSignUp)
 	router.POST("/user/login", userHandler.UserLogin)
 
-	router.Use(middleware.AdminAuthMiddleware())
+	router.Use(middleware.UserAuthMiddleware())
+
+	userprofile := router.Group("/user/profile")
 	{
-		usermanagement := router.Group("/user")
-		{
-			usermanagement.GET("list", adminHandler.GetUsers)
-			usermanagement.PATCH("/block", adminHandler.BlockUser)
-			usermanagement.PATCH("/unblock", adminHandler.UnBlockUser)
-		}
+		userprofile.POST("/add", userHandler.AddProfile)
+		userprofile.GET("/get", userHandler.GetProfile)
+	}
+
+	router.Use(middleware.AdminAuthMiddleware())
+
+	usermanagement := router.Group("/admin")
+	{
+		usermanagement.GET("/list", adminHandler.GetUsers)
+		usermanagement.PATCH("/block", adminHandler.BlockUser)
+		usermanagement.PATCH("/unblock", adminHandler.UnBlockUser)
 
 	}
 
 	return &ServerHTTP{engine: router}
-
 }
 
 func (s *ServerHTTP) Start() {
 	log.Printf("starting server on :8000")
 	err := s.engine.Run(":8000")
 	if err != nil {
-		log.Printf("error while starting the server")
+		log.Printf("error while starting the server: %v", err)
 	}
 }

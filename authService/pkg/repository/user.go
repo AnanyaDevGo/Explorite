@@ -6,6 +6,8 @@ import (
 	"authservice/pkg/utils/models"
 	"errors"
 	"fmt"
+	"regexp"
+	"unicode"
 
 	"gorm.io/gorm"
 )
@@ -52,4 +54,39 @@ func (ur *userRepository) FindUserByEmail(user models.UserLogin) (models.UserSig
 		return models.UserSignup{}, errors.New("error checking user details")
 	}
 	return userDetail, nil
+}
+func (ur *userRepository) AddProfile(id int, profile models.UserProfile) error {
+	err := ur.DB.Exec(`
+		INSERT INTO user_profiles (user_id, name, username, email, website, location, phone, bio)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+		id, profile.Name, profile.Username, profile.Email, profile.Website, profile.Location, profile.Phone, profile.Bio).Error
+	if err != nil {
+		return errors.New("could not add profile")
+	}
+
+	return nil
+}
+func (ur *userRepository) GetProfile(id int) ([]domain.UserProfile, error) {
+
+	var profile []domain.UserProfile
+	if err := ur.DB.Raw("select * from user_profiles where user_id = ?", id).Scan(&profile).Error; err != nil {
+		return []domain.UserProfile{}, errors.New("error in getting profile")
+	}
+	return profile, nil
+}
+
+func (ur *userRepository) ValidatePhoneNumber(phone string) bool {
+	phoneNumber := phone
+	pattern := `^\d{10}$`
+	regex := regexp.MustCompile(pattern)
+	value := regex.MatchString(phoneNumber)
+	return value
+}
+func (ur *userRepository) ValidateAlphabets(data string) (bool, error) {
+	for _, char := range data {
+		if !unicode.IsLetter(char) && !unicode.IsSpace(char) {
+			return false, errors.New("data contains non-alphabetic characters")
+		}
+	}
+	return true, nil
 }

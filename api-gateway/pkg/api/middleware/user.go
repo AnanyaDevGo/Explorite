@@ -14,6 +14,7 @@ func UserAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenHeader := c.GetHeader("authorization")
 		fmt.Println(tokenHeader, "this is the token header")
+
 		if tokenHeader == "" {
 			response := response.ClientResponse(http.StatusUnauthorized, "No auth header provided", nil, nil)
 			c.JSON(http.StatusUnauthorized, response)
@@ -37,6 +38,8 @@ func UserAuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		fmt.Println("id", tokenClaims.ID)
+		c.Set("id", tokenClaims.ID)
 
 		c.Set("tokenClaims", tokenClaims)
 

@@ -88,3 +88,34 @@ func (uu *userUseCase) LoginHandler(userDetails models.UserLogin) (*domain.Token
 		Token: tokenString,
 	}, nil
 }
+func (u *userUseCase) AddProfile(id int, profile models.UserProfile) error {
+
+	if profile.Name == "" || profile.Username == "" || profile.Email == "" || profile.Website == "" || profile.Location == "" || profile.Phone == "" || profile.Bio == "" {
+		return errors.New("fields cannot be empty")
+	}
+	ok, err := u.userRepository.ValidateAlphabets(profile.Name)
+	if err != nil {
+		return errors.New("invalid format for name")
+	}
+	if !ok {
+		return errors.New("invalid format for name")
+	}
+
+	phonenumber := u.userRepository.ValidatePhoneNumber(profile.Phone)
+	if !phonenumber {
+		return errors.New("invalid phone")
+	}
+	addProfileErr := u.userRepository.AddProfile(id, profile)
+	if addProfileErr != nil {
+		return errors.New("error in adding profile")
+	}
+	return nil
+}
+func (u *userUseCase) GetProfile(id int) ([]domain.UserProfile, error) {
+
+	profile, err := u.userRepository.GetProfile(id)
+	if err != nil {
+		return []domain.UserProfile{}, errors.New("error in getting profile")
+	}
+	return profile, nil
+}

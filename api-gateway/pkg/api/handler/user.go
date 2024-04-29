@@ -60,3 +60,36 @@ func (uh *UserHandler) UserLogin(c *gin.Context) {
 	success := response.ClientResponse(http.StatusOK, "User authenticated successfully", user, nil)
 	c.JSON(http.StatusOK, success)
 }
+
+func (uh *UserHandler) AddProfile(c *gin.Context) {
+	id, _ := c.Get("id")
+	var profile models.UserProfile
+	if err := c.ShouldBindJSON(&profile); err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Fields are in wrong format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+	fmt.Println("idddd", id)
+	if err := uh.GRPC_Client.AddProfile(id.(int), profile); err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not add profile", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "Successfully added profile", nil, nil)
+	c.JSON(http.StatusOK, successRes)
+}
+
+func (u *UserHandler) GetProfile(c *gin.Context) {
+	idString, _ := c.Get("id")
+	id, _ := idString.(int)
+
+	addresses, err := u.GRPC_Client.GetProfile(id)
+	if err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "could not retrieve records", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+	successRes := response.ClientResponse(http.StatusOK, "Successfully got all records", addresses, nil)
+	c.JSON(http.StatusOK, successRes)
+}
