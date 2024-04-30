@@ -3,10 +3,14 @@ package usecase
 import (
 	"authservice/pkg/domain"
 	"authservice/pkg/helper"
+	"authservice/pkg/randomnumbergenerator"
 	interfaces "authservice/pkg/repository/interface"
 	services "authservice/pkg/usecase/interface"
 	"authservice/pkg/utils/models"
 	"errors"
+	"fmt"
+	"strconv"
+	"time"
 
 	"github.com/jinzhu/copier"
 	"golang.org/x/crypto/bcrypt"
@@ -100,6 +104,13 @@ func (u *userUseCase) AddProfile(id int, profile models.UserProfile) error {
 	if !ok {
 		return errors.New("invalid format for name")
 	}
+	if !u.userRepository.IsValidEmail(profile.Email) {
+		return errors.New("invalid email format")
+	}
+
+	if !u.userRepository.IsValidWebsite(profile.Website) {
+		return errors.New("invalid website format")
+	}
 
 	phonenumber := u.userRepository.ValidatePhoneNumber(profile.Phone)
 	if !phonenumber {
@@ -111,11 +122,92 @@ func (u *userUseCase) AddProfile(id int, profile models.UserProfile) error {
 	}
 	return nil
 }
-func (u *userUseCase) GetProfile(id int) ([]domain.UserProfile, error) {
+func (u *userUseCase) GetProfile(id int) (models.UserProfile, error) {
+	fmt.Println("id usec ase", id)
 
 	profile, err := u.userRepository.GetProfile(id)
 	if err != nil {
-		return []domain.UserProfile{}, errors.New("error in getting profile")
+		return models.UserProfile{}, errors.New("error in getting profile")
 	}
+	fmt.Println("profile usecase", profile)
 	return profile, nil
+}
+
+func (u *userUseCase) EditProfile(id int, user models.EditProfile) (models.EditProfile, error) {
+	fmt.Println("profileeee")
+
+	if user.Name == "" || user.Username == "" || user.Email == "" || user.Website == "" || user.Location == "" || user.Phone == "" || user.Bio == "" {
+		return models.EditProfile{}, errors.New("all fields must be filled")
+	}
+	fmt.Println("profile2222")
+
+	ok, err := u.userRepository.ValidateAlphabets(user.Name)
+	if err != nil {
+		return models.EditProfile{}, errors.New("invalid format for name")
+	}
+	if !ok {
+		return models.EditProfile{}, errors.New("invalid format for name")
+	}
+	fmt.Println("profile33333")
+	if !u.userRepository.IsValidEmail(user.Email) {
+		return models.EditProfile{}, errors.New("invalid email format")
+	}
+	fmt.Println("profile4444444")
+
+	// if !u.userRepository.IsValidWebsite(user.Website) {
+	// 	fmt.Println("websiteeeeeeeee")
+	// 	err := errors.New("invalid website format")
+	// 	return models.EditProfile{}, err
+	// }
+	fmt.Println("profile5555")
+
+	phonenumber := u.userRepository.ValidatePhoneNumber(user.Phone)
+	if !phonenumber {
+		return models.EditProfile{}, errors.New("invalid phone")
+	}
+	fmt.Println("profile6666")
+	result, err := u.userRepository.EditProfile(id, user)
+	fmt.Println("resulttttt", result, err)
+
+	if err != nil {
+		fmt.Println("erorrrrrrrrrr")
+		return models.EditProfile{}, err
+	}
+
+	return result, nil
+}
+func (r *userUseCase) UserOTPLogin(email string) (string, error) {
+	otp := randomnumbergenerator.RandomNumber()
+
+	otpString := strconv.Itoa(otp)
+
+	errRemv := r.userRepository.DeleteRecentOtpRequestsBefore5min()
+	if errRemv != nil {
+		return "", errRemv
+	}
+
+	expiration := time.Now().Add(5 * time.Minute)
+	errTempSave := r.userRepository.TemporarySavingUserOtp(otp, email, expiration)
+	if errTempSave != nil {
+		fmt.Println("Can't save temporary data for OTP verification in DB")
+		return "", errors.New("OTP verification down, please try again later")
+	}
+	// name, err := r.userRepository.GetUserName(email)
+	// if err != nil {
+	// 	return "", err
+	// }
+	// err = helper.SendVerificationEmailWithOtp(otp, email, name)
+	// if err != nil {
+	// 	return "",err
+	// }
+
+	return otpString, nil
+}
+
+func (r *userUseCase) OtpVerification(email, otp string) (bool, error) {
+	verified, err := r.userRepository.VerifyOTP(email, otp)
+	if err != nil {
+		return false, err
+	}
+	return verified, nil
 }

@@ -63,3 +63,19 @@ type UserProfile struct {
 	Phone    string `json:"phone"`
 	Bio      string `json:"bio"`
 }
+type EditProfile struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email" validate:"email"`
+	Website  string `json:"website"`
+	Location string `json:"location"`
+	Phone    string `json:"phone"`
+	Bio      string `json:"bio"`
+}
+type UserOTPLogin struct {
+	Email string `json:"email" validate:"email"`
+}
+type OtpVerification struct {
+	Email string `json:"email" validate:"email"`
+	Otp   string `json:"otp" validate:"required,len=4,number"`
+}

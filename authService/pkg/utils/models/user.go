@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type UserSignup struct {
 	ID          uint   `json:"id"`
 	Email       string `json:"email" binding:"required" validate:"required,email"`
@@ -71,4 +73,22 @@ type UserProfile struct {
 	Location string `json:"location"`
 	Phone    string `json:"phone"`
 	Bio      string `json:"bio"`
+}
+type EditProfile struct {
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Email    string `json:"email" validate:"email"`
+	Website  string `json:"website"`
+	Location string `json:"location"`
+	Phone    string `json:"phone"`
+	Bio      string `json:"bio"`
+}
+type UserOTPLogin struct {
+	Email      string    `json:"email" validate:"email"`
+	Expiration time.Time `json:"expiration"`
+	Otp        int       `json:"otp"`
+}
+type OtpVerification struct {
+	Email string `json:"email" validate:"email"`
+	Otp   string `json:"otp" validate:"required,len=4,number"`
 }

@@ -19,10 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	User_UserSignUp_FullMethodName = "/user.User/UserSignUp"
-	User_UserLogin_FullMethodName  = "/user.User/UserLogin"
-	User_AddProfile_FullMethodName = "/user.User/AddProfile"
-	User_GetProfile_FullMethodName = "/user.User/GetProfile"
+	User_UserSignUp_FullMethodName      = "/user.User/UserSignUp"
+	User_UserLogin_FullMethodName       = "/user.User/UserLogin"
+	User_AddProfile_FullMethodName      = "/user.User/AddProfile"
+	User_GetProfile_FullMethodName      = "/user.User/GetProfile"
+	User_EditProfile_FullMethodName     = "/user.User/EditProfile"
+	User_UserOTPLogin_FullMethodName    = "/user.User/UserOTPLogin"
+	User_OtpVerification_FullMethodName = "/user.User/OtpVerification"
 )
 
 // UserClient is the client API for User service.
@@ -33,6 +36,9 @@ type UserClient interface {
 	UserLogin(ctx context.Context, in *UserLoginRequest, opts ...grpc.CallOption) (*UserLoginResponse, error)
 	AddProfile(ctx context.Context, in *AddProfileRequest, opts ...grpc.CallOption) (*AddProfileResponse, error)
 	GetProfile(ctx context.Context, in *GetProfileRequest, opts ...grpc.CallOption) (*GetProfileResponse, error)
+	EditProfile(ctx context.Context, in *EditProfileRequest, opts ...grpc.CallOption) (*EditProfileResponse, error)
+	UserOTPLogin(ctx context.Context, in *UserOTPLoginRequest, opts ...grpc.CallOption) (*UserOTPLoginResponse, error)
+	OtpVerification(ctx context.Context, in *OtpVerificationRequest, opts ...grpc.CallOption) (*OtpVerificationResponse, error)
 }
 
 type userClient struct {
@@ -79,6 +85,33 @@ func (c *userClient) GetProfile(ctx context.Context, in *GetProfileRequest, opts
 	return out, nil
 }
 
+func (c *userClient) EditProfile(ctx context.Context, in *EditProfileRequest, opts ...grpc.CallOption) (*EditProfileResponse, error) {
+	out := new(EditProfileResponse)
+	err := c.cc.Invoke(ctx, User_EditProfile_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) UserOTPLogin(ctx context.Context, in *UserOTPLoginRequest, opts ...grpc.CallOption) (*UserOTPLoginResponse, error) {
+	out := new(UserOTPLoginResponse)
+	err := c.cc.Invoke(ctx, User_UserOTPLogin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) OtpVerification(ctx context.Context, in *OtpVerificationRequest, opts ...grpc.CallOption) (*OtpVerificationResponse, error) {
+	out := new(OtpVerificationResponse)
+	err := c.cc.Invoke(ctx, User_OtpVerification_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -87,6 +120,9 @@ type UserServer interface {
 	UserLogin(context.Context, *UserLoginRequest) (*UserLoginResponse, error)
 	AddProfile(context.Context, *AddProfileRequest) (*AddProfileResponse, error)
 	GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error)
+	EditProfile(context.Context, *EditProfileRequest) (*EditProfileResponse, error)
+	UserOTPLogin(context.Context, *UserOTPLoginRequest) (*UserOTPLoginResponse, error)
+	OtpVerification(context.Context, *OtpVerificationRequest) (*OtpVerificationResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -105,6 +141,15 @@ func (UnimplementedUserServer) AddProfile(context.Context, *AddProfileRequest) (
 }
 func (UnimplementedUserServer) GetProfile(context.Context, *GetProfileRequest) (*GetProfileResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProfile not implemented")
+}
+func (UnimplementedUserServer) EditProfile(context.Context, *EditProfileRequest) (*EditProfileResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditProfile not implemented")
+}
+func (UnimplementedUserServer) UserOTPLogin(context.Context, *UserOTPLoginRequest) (*UserOTPLoginResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserOTPLogin not implemented")
+}
+func (UnimplementedUserServer) OtpVerification(context.Context, *OtpVerificationRequest) (*OtpVerificationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method OtpVerification not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -191,6 +236,60 @@ func _User_GetProfile_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_EditProfile_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditProfileRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).EditProfile(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_EditProfile_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).EditProfile(ctx, req.(*EditProfileRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_UserOTPLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserOTPLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UserOTPLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_UserOTPLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UserOTPLogin(ctx, req.(*UserOTPLoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_OtpVerification_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(OtpVerificationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).OtpVerification(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_OtpVerification_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).OtpVerification(ctx, req.(*OtpVerificationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +312,18 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetProfile",
 			Handler:    _User_GetProfile_Handler,
+		},
+		{
+			MethodName: "EditProfile",
+			Handler:    _User_EditProfile_Handler,
+		},
+		{
+			MethodName: "UserOTPLogin",
+			Handler:    _User_UserOTPLogin_Handler,
+		},
+		{
+			MethodName: "OtpVerification",
+			Handler:    _User_OtpVerification_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

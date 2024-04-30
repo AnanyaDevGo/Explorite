@@ -59,6 +59,7 @@ func (ad *AdminHandler) LoginHandler(c *gin.Context) {
 	success := response.ClientResponse(http.StatusOK, "Admin authenticated successfully", admin, nil)
 	c.JSON(http.StatusOK, success)
 }
+
 func (ad *AdminHandler) GetUsers(c *gin.Context) {
 
 	pageStr := c.Query("page")
@@ -97,6 +98,7 @@ func (ad *AdminHandler) BlockUser(c *gin.Context) {
 func (ad *AdminHandler) UnBlockUser(c *gin.Context) {
 
 	id := c.Query("id")
+	fmt.Println("userid", id)
 	err := ad.GRPC_Client.UnBlockUser(id)
 
 	if err != nil {

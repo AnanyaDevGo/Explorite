@@ -41,6 +41,7 @@ func UserAuthMiddleware() gin.HandlerFunc {
 		fmt.Println("id", tokenClaims.ID)
 		c.Set("id", tokenClaims.ID)
 
+		fmt.Println("claims id", tokenClaims.ID)
 		c.Set("tokenClaims", tokenClaims)
 
 		c.Next()

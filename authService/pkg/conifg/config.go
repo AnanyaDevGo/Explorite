@@ -1,6 +1,8 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	DBHost     string `mapstructure:"DB_HOST"`
@@ -9,11 +11,19 @@ type Config struct {
 	DBPort     string `mapstructure:"DB_PORT"`
 	DBPassword string `mapstructure:"DB_PASSWORD"`
 	Port       string `mapstructure:"PORT"`
+	Smtp       string `mapstructure:"smtp"`
 }
-
+type Smtp struct {
+	SmtpSender   string `mapstructure:"SMTP_SENDER"`
+	SmtpPassword string `mapstructure:"SMTP_APPKEY"`
+	SmtpHost     string `mapstructure:"SMTP_HOST"`
+	SmtpPort     string `mapstructure:"SMTP_PORT"`
+}
 var envs = []string{
 	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "PORT",
+	"SMTP_SENDER", "SMTP_APPKEY", "SMTP_HOST", "SMTP_PORT",
 }
+
 
 func LoadConfig() (Config, error) {
 	var config Config

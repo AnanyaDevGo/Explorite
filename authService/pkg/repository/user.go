@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"time"
 	"unicode"
 
 	"gorm.io/gorm"
@@ -28,7 +29,7 @@ func (ur *userRepository) UserSignUp(userDetails models.UserSignup) (models.User
 	fmt.Println("email", model.Email)
 
 	fmt.Println("models", model)
-	if err := ur.DB.Raw("INSERT INTO users (firstname, lastname, email, password, phone_number, date_of_birth, gender) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id, firstname, lastname, email, phone_number, date_of_birth, gender", userDetails.Firstname, userDetails.Lastname, userDetails.Email, userDetails.Password, userDetails.PhoneNumber, userDetails.DateOfBirth, userDetails.Gender).Scan(&model).Error; err != nil {
+	if err := ur.DB.Raw("INSERT INTO users (firstname, lastname, email, password, phone_number, date_of_birth, gender,bio) VALUES (?,?,?,  ?, ?, ?, ?, ?) RETURNING id, firstname, lastname, email, phone_number, date_of_birth, gender,bio", userDetails.Firstname, userDetails.Lastname, userDetails.Email, userDetails.Password, userDetails.PhoneNumber, userDetails.DateOfBirth, userDetails.Gender, userDetails.Bio).Scan(&model).Error; err != nil {
 		return models.UserDetailResponse{}, err
 	}
 	fmt.Println("inside", model.Email)
@@ -55,6 +56,42 @@ func (ur *userRepository) FindUserByEmail(user models.UserLogin) (models.UserSig
 	}
 	return userDetail, nil
 }
+func (ur *userRepository) GetUserName(email string) (string, error) {
+	var name string
+	err := ur.DB.Raw("select firstname from users where email = ?", email).Scan(&name).Error
+	if err != nil {
+		return "", err
+	}
+	return name, nil
+}
+func (ur *userRepository) DeleteRecentOtpRequestsBefore5min() error {
+	query := "DELETE FROM user_otp_logins WHERE expiration < CURRENT_TIMESTAMP - INTERVAL '5 minutes';"
+	err := ur.DB.Exec(query).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ur *userRepository) TemporarySavingUserOtp(otp int, userEmail string, expiration time.Time) error {
+
+	query := `INSERT INTO user_otp_logins (email, otp, expiration) VALUES ($1, $2, $3)`
+	err := ur.DB.Exec(query, userEmail, otp, expiration).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (ur *userRepository) VerifyOTP(email, otp string) (bool, error) {
+	query := "SELECT COUNT(*) FROM user_otp_logins WHERE email = ? AND otp = ? AND expiration > CURRENT_TIMESTAMP;"
+	var count int64
+	if err := ur.DB.Raw(query, email, otp).Scan(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
 func (ur *userRepository) AddProfile(id int, profile models.UserProfile) error {
 	err := ur.DB.Exec(`
 		INSERT INTO user_profiles (user_id, name, username, email, website, location, phone, bio)
@@ -66,12 +103,17 @@ func (ur *userRepository) AddProfile(id int, profile models.UserProfile) error {
 
 	return nil
 }
-func (ur *userRepository) GetProfile(id int) ([]domain.UserProfile, error) {
+func (ur *userRepository) GetProfile(id int) (models.UserProfile, error) {
 
-	var profile []domain.UserProfile
-	if err := ur.DB.Raw("select * from user_profiles where user_id = ?", id).Scan(&profile).Error; err != nil {
-		return []domain.UserProfile{}, errors.New("error in getting profile")
+	fmt.Println("id repo", id)
+
+	var profile models.UserProfile
+	profile.ID = uint(id)
+	if err := ur.DB.Raw("select firstname as name, email, phone_number as phone, bio from users where id = ?", id).Scan(&profile).Error; err != nil {
+		return models.UserProfile{}, errors.New("error in getting profile")
 	}
+	fmt.Println("profile id", id)
+	fmt.Println("profileeeeee", profile)
 	return profile, nil
 }
 
@@ -89,4 +131,56 @@ func (ur *userRepository) ValidateAlphabets(data string) (bool, error) {
 		}
 	}
 	return true, nil
+}
+func (ur *userRepository) IsValidEmail(email string) bool {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	match, _ := regexp.MatchString(emailRegex, email)
+	return match
+}
+func (ur *userRepository) IsValidWebsite(website string) bool {
+	fmt.Println("wenbsite uuuuuuuuuu")
+	websiteRegex := `^(https?|ftp):\/\/[^\s\/$.?#].[^\s]*$`
+	match, _ := regexp.MatchString(websiteRegex, website)
+	return match
+}
+
+func (ur *userRepository) EditProfile(id int, user models.EditProfile) (models.EditProfile, error) {
+	var result models.EditProfile
+
+	fmt.Println("edit profile")
+	args := []interface{}{}
+	query := "update users set"
+
+	if user.Email != "" {
+		query += " email = $1,"
+
+		args = append(args, user.Email)
+	}
+
+	// if user.Name != "" {
+	// 	query += " name = $2,"
+	// 	args = append(args, user.Name)
+	// }
+
+	if user.Phone != "" {
+		query += " phone_number = $2,"
+
+		args = append(args, user.Phone)
+	}
+
+	query = query[:len(query)-1] + " where id = $3"
+
+	args = append(args, id)
+
+	err := ur.DB.Exec(query, args...).Error
+	if err != nil {
+		return models.EditProfile{}, err
+	}
+	query2 := "select firstname as name, email, phone_number as phone, bio from users where id = ?"
+	if err := ur.DB.Raw(query2, id).Scan(&result).Error; err != nil {
+		return models.EditProfile{}, err
+	}
+
+	return result, nil
+
 }

@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"google.golang.org/grpc"
@@ -84,6 +85,35 @@ func (uc *userClient) UserLogin(userDetails models.UserLogin) (models.TokenUser,
 		Token: resp.Token,
 	}, nil
 }
+func (uc *userClient) UserOTPLogin(email string) (string, error) {
+	resp, err := uc.Client.UserOTPLogin(context.Background(), &pb.UserOTPLoginRequest{
+		Email: email,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	if resp.Status != 200 {
+		return "", errors.New(resp.Error)
+	}
+
+	return resp.Otp, nil
+}
+func (uc *userClient) OtpVerification(email, otp string) (bool, error) {
+	resp, err := uc.Client.OtpVerification(context.Background(), &pb.OtpVerificationRequest{
+		Email: email,
+		Otp:   otp,
+	})
+	if err != nil {
+		return false, err
+	}
+
+	if resp.Status != 200 {
+		return false, errors.New(resp.Error)
+	}
+
+	return true, nil
+}
 func (uc *userClient) AddProfile(id int, profile models.UserProfile) error {
 	_, err := uc.Client.AddProfile(context.Background(), &pb.AddProfileRequest{
 		Id:       int32(id),
@@ -100,26 +130,34 @@ func (uc *userClient) AddProfile(id int, profile models.UserProfile) error {
 	}
 	return nil
 }
-func (uc *userClient) GetProfile(id int) ([]models.UserProfile, error) {
+func (uc *userClient) GetProfile(id int) (models.UserProfile, error) {
+	fmt.Println("id hereeee", id)
 	resp, err := uc.Client.GetProfile(context.Background(), &pb.GetProfileRequest{Id: int32(id)})
 	if err != nil {
-		return nil, err
+		return models.UserProfile{}, err
 	}
 
-	profiles := make([]models.UserProfile, 0, len(resp.Profiles))
-	for _, pbProfile := range resp.Profiles {
-		profile := models.UserProfile{
-			ID:       uint(pbProfile.Id),
-			Name:     pbProfile.Name,
-			Username: pbProfile.Username,
-			Email:    pbProfile.Email,
-			Website:  pbProfile.Website,
-			Location: pbProfile.Location,
-			Phone:    pbProfile.Phone,
-			Bio:      pbProfile.Bio,
-		}
-		profiles = append(profiles, profile)
+	var profile models.UserProfile
+	profile.ID = uint(resp.Profile.Id)
+	profile.Name = resp.Profile.Name
+	profile.Email = resp.Profile.Email
+	profile.Phone = resp.Profile.Phone
+	profile.Bio = resp.Profile.Bio
+	return profile, nil
+}
+func (uc *userClient) EditProfile(id int, profile models.EditProfile) error {
+	_, err := uc.Client.EditProfile(context.Background(), &pb.EditProfileRequest{
+		Id:       int32(id),
+		Name:     profile.Name,
+		Username: profile.Username,
+		Email:    profile.Email,
+		Website:  profile.Website,
+		Location: profile.Location,
+		Phone:    profile.Phone,
+		Bio:      profile.Bio,
+	})
+	if err != nil {
+		return err
 	}
-
-	return profiles, nil
+	return nil
 }

@@ -101,28 +101,77 @@ func (us *UserServer) AddProfile(ctx context.Context, req *pb.AddProfileRequest)
 }
 
 func (us *UserServer) GetProfile(ctx context.Context, req *pb.GetProfileRequest) (*pb.GetProfileResponse, error) {
-	profiles, err := us.userUseCase.GetProfile(int(req.Id))
+	fmt.Println("hereeeee", req.Id)
+	profile, err := us.userUseCase.GetProfile(int(req.Id))
 	if err != nil {
 		return nil, err
 	}
 
-	var pbProfiles []*pb.UserProfile
-	for _, profile := range profiles {
-		pbProfile := &pb.UserProfile{
-			Id:       uint64(profile.ID),
-			Name:     profile.Name,
-			Username: profile.Username,
-			Email:    profile.Email,
-			Website:  profile.Website,
-			Location: profile.Location,
-			Phone:    profile.Phone,
-			Bio:      profile.Bio,
-		}
-		pbProfiles = append(pbProfiles, pbProfile)
+	return &pb.GetProfileResponse{
+		Status: 200,
+		Profile: &pb.UserProfile{
+			Id:    uint64(profile.ID),
+			Name:  profile.Name,
+			Email: profile.Email,
+			Phone: profile.Phone,
+			Bio:   profile.Bio,
+		},
+	}, nil
+}
+func (us *UserServer) EditProfile(ctx context.Context, req *pb.EditProfileRequest) (*pb.EditProfileResponse, error) {
+	profile := models.EditProfile{
+		Name:     req.Name,
+		Username: req.Username,
+		Email:    req.Email,
+		Website:  req.Website,
+		Location: req.Location,
+		Phone:    req.Phone,
+		Bio:      req.Bio,
 	}
 
-	return &pb.GetProfileResponse{
+	res, err := us.userUseCase.EditProfile(int(req.Id), profile)
+	if err != nil {
+		fmt.Println("error @ editprofile")
+		return nil, err
+	}
+
+	return &pb.EditProfileResponse{
 		Status:   200,
-		Profiles: pbProfiles,
+		Name:     res.Name,
+		Username: res.Username,
+		Email:    res.Email,
+		Website:  res.Website,
+		Location: res.Location,
+		Phone:    res.Phone,
+		Bio:      res.Bio,
+	}, nil
+}
+func (us *UserServer) UserOTPLogin(ctx context.Context, req *pb.UserOTPLoginRequest) (*pb.UserOTPLoginResponse, error) {
+	otp, err := us.userUseCase.UserOTPLogin(req.Email)
+	if err != nil {
+		return &pb.UserOTPLoginResponse{
+			Status: 400,
+			Error:  err.Error(),
+		}, nil
+	}
+
+	return &pb.UserOTPLoginResponse{
+		Status: 200,
+		Otp:    otp,
+	}, nil
+}
+
+func (us *UserServer) OtpVerification(ctx context.Context, req *pb.OtpVerificationRequest) (*pb.OtpVerificationResponse, error) {
+	verified, err := us.userUseCase.OtpVerification(req.Email, req.Otp)
+	if err != nil {
+		return &pb.OtpVerificationResponse{
+			Status: 400,
+			Error:  err.Error(),
+		}, nil
+	}
+
+	return &pb.OtpVerificationResponse{
+		Status:   200,
+		Verified: verified,
 	}, nil
 }

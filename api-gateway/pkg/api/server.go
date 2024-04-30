@@ -21,6 +21,8 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 
 	router.POST("/user/signup", userHandler.UserSignUp)
 	router.POST("/user/login", userHandler.UserLogin)
+	router.POST("/user/otplogin", userHandler.UserOTPLogin)
+	router.POST("/user/otpverify", userHandler.VerifyOTP)
 
 	router.Use(middleware.UserAuthMiddleware())
 
@@ -28,6 +30,7 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	{
 		userprofile.POST("/add", userHandler.AddProfile)
 		userprofile.GET("/get", userHandler.GetProfile)
+		userprofile.PATCH("/edit", userHandler.EditProfile)
 	}
 
 	router.Use(middleware.AdminAuthMiddleware())
