@@ -184,3 +184,32 @@ func (ur *userRepository) EditProfile(id int, user models.EditProfile) (models.E
 	return result, nil
 
 }
+func (ur *userRepository) ChangePassword(id int, password string) error {
+
+	if id <= 0 {
+		return errors.New("negative or zero values are not allowed")
+	}
+
+	err := ur.DB.Exec("UPDATE users SET password=$1 WHERE id=$2", password, id).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+func (u *userRepository) GetPassword(id int) (string, error) {
+
+	if id <= 0 {
+		return "", errors.New("negative or zero values are not allowed")
+	}
+
+	var userPassword string
+	err := u.DB.Raw("select password from users where id = ?", id).Scan(&userPassword).Error
+	if err != nil {
+		return "", err
+	}
+	return userPassword, nil
+
+}

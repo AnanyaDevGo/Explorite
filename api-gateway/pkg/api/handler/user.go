@@ -162,3 +162,23 @@ func (u *UserHandler) EditProfile(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, successRes)
 }
+func (u *UserHandler) ChangePassword(c *gin.Context) {
+	idString, _ := c.Get("id")
+	id, _ := idString.(int)
+
+	var ChangePassword models.ChangePassword
+	if err := c.BindJSON(&ChangePassword); err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "fields provided are in wrong format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	if err := u.GRPC_Client.ChangePassword(id, ChangePassword.Oldpassword, ChangePassword.Password, ChangePassword.Repassword); err != nil {
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not change the password", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	successRes := response.ClientResponse(http.StatusOK, "password changed Successfully ", nil, nil)
+	c.JSON(http.StatusOK, successRes)
+}

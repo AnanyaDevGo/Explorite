@@ -12,6 +12,7 @@ service User {
     rpc EditProfile(EditProfileRequest) returns (EditProfileResponse); 
     rpc UserOTPLogin(UserOTPLoginRequest) returns (UserOTPLoginResponse); 
     rpc OtpVerification(OtpVerificationRequest) returns (OtpVerificationResponse);
+    rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
 }
 
 message UserSignupRequest {
@@ -77,7 +78,6 @@ message GetProfileResponse {
     UserProfile profile = 2;
 }
 
-
 message UserProfile {
     uint64 id = 1;
     string name = 2;
@@ -127,4 +127,15 @@ message OtpVerificationResponse {
     int64 status = 1;
     bool verified = 2;
     string error = 3;
+}
+message ChangePasswordRequest {
+    int32 user_id = 1;
+    string old_password = 2;
+    string new_password = 3;
+    string re_password = 4;
+}
+
+message ChangePasswordResponse {
+    int64 status = 1;
+    string error = 2;
 }

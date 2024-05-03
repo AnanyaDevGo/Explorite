@@ -26,6 +26,9 @@ func NewUserUseCase(repository interfaces.UserRepository) services.UserUseCase {
 	}
 }
 
+
+var InternalError = "Internal Server Error"
+
 func (uu *userUseCase) UserSignUp(userDetails models.UserSignup) (*domain.TokenUser, error) {
 	email, err := uu.userRepository.CheckUserExistsByEmail(userDetails.Email)
 	if err != nil {
@@ -210,4 +213,30 @@ func (r *userUseCase) OtpVerification(email, otp string) (bool, error) {
 		return false, err
 	}
 	return verified, nil
+}
+func (r *userUseCase) ChangePassword(id int, old string, password string, repassword string) error {
+    if password == "" {
+        return errors.New("password cannot be empty")
+    }
+
+    userPassword, err := r.userRepository.GetPassword(id)
+    if err != nil {
+        return errors.New(InternalError)
+    }
+
+    err = bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(old))
+    if err != nil {
+        return errors.New("password incorrect")
+    }
+
+    if password != repassword {
+        return errors.New("passwords does not match")
+    }
+
+    newpassword, err := helper.PasswordHash(password)
+    if err != nil {
+        return errors.New("error in hashing password")
+    }
+
+    return r.userRepository.ChangePassword(id, string(newpassword))
 }

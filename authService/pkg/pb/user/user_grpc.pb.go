@@ -26,6 +26,7 @@ const (
 	User_EditProfile_FullMethodName     = "/user.User/EditProfile"
 	User_UserOTPLogin_FullMethodName    = "/user.User/UserOTPLogin"
 	User_OtpVerification_FullMethodName = "/user.User/OtpVerification"
+	User_ChangePassword_FullMethodName  = "/user.User/ChangePassword"
 )
 
 // UserClient is the client API for User service.
@@ -39,6 +40,7 @@ type UserClient interface {
 	EditProfile(ctx context.Context, in *EditProfileRequest, opts ...grpc.CallOption) (*EditProfileResponse, error)
 	UserOTPLogin(ctx context.Context, in *UserOTPLoginRequest, opts ...grpc.CallOption) (*UserOTPLoginResponse, error)
 	OtpVerification(ctx context.Context, in *OtpVerificationRequest, opts ...grpc.CallOption) (*OtpVerificationResponse, error)
+	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
 }
 
 type userClient struct {
@@ -112,6 +114,15 @@ func (c *userClient) OtpVerification(ctx context.Context, in *OtpVerificationReq
 	return out, nil
 }
 
+func (c *userClient) ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error) {
+	out := new(ChangePasswordResponse)
+	err := c.cc.Invoke(ctx, User_ChangePassword_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -123,6 +134,7 @@ type UserServer interface {
 	EditProfile(context.Context, *EditProfileRequest) (*EditProfileResponse, error)
 	UserOTPLogin(context.Context, *UserOTPLoginRequest) (*UserOTPLoginResponse, error)
 	OtpVerification(context.Context, *OtpVerificationRequest) (*OtpVerificationResponse, error)
+	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -150,6 +162,9 @@ func (UnimplementedUserServer) UserOTPLogin(context.Context, *UserOTPLoginReques
 }
 func (UnimplementedUserServer) OtpVerification(context.Context, *OtpVerificationRequest) (*OtpVerificationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OtpVerification not implemented")
+}
+func (UnimplementedUserServer) ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -290,6 +305,24 @@ func _User_OtpVerification_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ChangePasswordRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).ChangePassword(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_ChangePassword_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).ChangePassword(ctx, req.(*ChangePasswordRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -324,6 +357,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OtpVerification",
 			Handler:    _User_OtpVerification_Handler,
+		},
+		{
+			MethodName: "ChangePassword",
+			Handler:    _User_ChangePassword_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

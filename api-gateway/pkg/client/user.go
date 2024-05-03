@@ -161,3 +161,16 @@ func (uc *userClient) EditProfile(id int, profile models.EditProfile) error {
 	}
 	return nil
 }
+func (uc *userClient) ChangePassword(userID int, oldPassword, newPassword, rePassword string) error {
+   
+    _, err := uc.Client.ChangePassword(context.Background(), &pb.ChangePasswordRequest{
+        UserId:      int32(userID),
+        OldPassword: oldPassword,
+        NewPassword: newPassword,
+        RePassword:  rePassword,
+    })
+    if err != nil {
+        return err
+    }
+    return nil
+}

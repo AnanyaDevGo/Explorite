@@ -79,3 +79,8 @@ type OtpVerification struct {
 	Email string `json:"email" validate:"email"`
 	Otp   string `json:"otp" validate:"required,len=4,number"`
 }
+type ChangePassword struct {
+    Oldpassword string `json:"old_password"`
+    Password    string `json:"password"`
+    Repassword  string `json:"resetted_password"`
+}

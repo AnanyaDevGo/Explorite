@@ -10,4 +10,5 @@ type UserClient interface {
 	AddProfile(id int, profile models.UserProfile) error
 	GetProfile(id int) (models.UserProfile, error)
 	EditProfile(id int, profile models.EditProfile) error
+	ChangePassword(userID int, oldPassword, newPassword, rePassword string) error
 }

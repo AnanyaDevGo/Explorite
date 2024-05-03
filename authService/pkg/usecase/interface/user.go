@@ -14,4 +14,5 @@ type UserUseCase interface {
 	AddProfile(id int, profile models.UserProfile) error
 	GetProfile(id int) (models.UserProfile, error)
 	EditProfile(id int, user models.EditProfile) (models.EditProfile, error)
+	ChangePassword(id int, old string, password string, repassword string) error
 }

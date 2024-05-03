@@ -31,6 +31,7 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 		userprofile.POST("/add", userHandler.AddProfile)
 		userprofile.GET("/get", userHandler.GetProfile)
 		userprofile.PATCH("/edit", userHandler.EditProfile)
+		userprofile.PATCH("/change-password", userHandler.ChangePassword)
 	}
 
 	router.Use(middleware.AdminAuthMiddleware())

@@ -5,6 +5,7 @@ import (
 	interfaces "authservice/pkg/usecase/interface"
 	"authservice/pkg/utils/models"
 	"context"
+	"errors"
 	"fmt"
 )
 
@@ -173,5 +174,35 @@ func (us *UserServer) OtpVerification(ctx context.Context, req *pb.OtpVerificati
 	return &pb.OtpVerificationResponse{
 		Status:   200,
 		Verified: verified,
+	}, nil
+}
+func (us *UserServer) ChangePassword(ctx context.Context, req *pb.ChangePasswordRequest) (*pb.ChangePasswordResponse, error) {
+	userID := int(req.UserId)
+	oldPassword := req.OldPassword
+	newPassword := req.NewPassword
+	rePassword := req.RePassword
+
+	err := us.userUseCase.ChangePassword(userID, oldPassword, newPassword, rePassword)
+	if err != nil {
+		if errors.Is(err, models.ErrUserNotFound) {
+			return &pb.ChangePasswordResponse{
+				Status: 400,
+				Error:  "user not found",
+			}, nil
+		}
+		if errors.Is(err, models.ErrInvalidPassword) {
+			return &pb.ChangePasswordResponse{
+				Status: 400,
+				Error:  "invalid password",
+			}, nil
+		}
+		return &pb.ChangePasswordResponse{
+			Status: 500,
+			Error:  "internal server error",
+		}, nil
+	}
+
+	return &pb.ChangePasswordResponse{
+		Status: 200,
 	}, nil
 }

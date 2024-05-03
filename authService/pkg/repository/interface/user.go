@@ -22,4 +22,6 @@ type UserRepository interface {
 	ValidateAlphabets(data string) (bool, error)
 	IsValidEmail(email string) bool
 	IsValidWebsite(website string) bool
+	ChangePassword(id int, password string) error
+	GetPassword(id int) (string, error)
 }
