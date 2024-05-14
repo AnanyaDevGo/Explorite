@@ -13,7 +13,7 @@ import (
 func UserAuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenHeader := c.GetHeader("authorization")
-		fmt.Println(tokenHeader, "this is the token header")
+		//fmt.Println(tokenHeader, "this is the token header user")
 
 		if tokenHeader == "" {
 			response := response.ClientResponse(http.StatusUnauthorized, "No auth header provided", nil, nil)

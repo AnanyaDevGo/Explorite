@@ -240,3 +240,18 @@ func (r *userUseCase) ChangePassword(id int, old string, password string, repass
 
     return r.userRepository.ChangePassword(id, string(newpassword))
 }
+// func (uu *userUseCase) SavePost(postID int) error {
+//     err := uu.userRepository.SavePost(postID)
+//     if err != nil {
+//         return err
+//     }
+//     return nil
+// }
+
+// func (uu *userUseCase) UnSavePost(postID int) error {
+//     err := uu.userRepository.UnSavePost(postID)
+//     if err != nil {
+//         return err
+//     }
+//     return nil
+// }

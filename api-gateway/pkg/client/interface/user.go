@@ -11,4 +11,6 @@ type UserClient interface {
 	GetProfile(id int) (models.UserProfile, error)
 	EditProfile(id int, profile models.EditProfile) error
 	ChangePassword(userID int, oldPassword, newPassword, rePassword string) error
+	// SavePost(postID int) error
+	// UnSavePost(postID int) error
 }

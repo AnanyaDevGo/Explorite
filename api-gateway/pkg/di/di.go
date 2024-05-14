@@ -16,12 +16,16 @@ func InitializeAPI(cfg config.Config) (*server.ServerHTTP, error) {
 	if err != nil {
 		return nil, err
 	}
+	postClient, err := client.NewPostClient(cfg)
+	if err != nil {
+		return nil, err
+	}
 
 	adminHandler := handler.NewAdminHandler(adminClient)
-
 	userHandler := handler.NewUserHandler(userClient)
+	postHandler := handler.NewPostHandler(postClient)
 
-	serverHTTP := server.NewServerHTTP(adminHandler, userHandler)
+	serverHTTP := server.NewServerHTTP(adminHandler, userHandler, postHandler)
 
 	return serverHTTP, nil
 }

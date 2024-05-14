@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package post;
+
+option go_package = "./pkg/pb/post";
+
+service Post {
+    rpc AddPost(AddPostRequest) returns (AddPostResponse);
+    //rpc ListPost(ListPostRequest) returns (ListPostResponse);
+    // rpc EditPost(EditPostRequest) returns (EditPostResponse);
+    // rpc DeletePost(DeletePostRequest) returns (DeletePostResponse);
+}
+
+message AddPostRequest {
+    string caption = 1;
+    string user_id = 2;
+    string media_url = 3;
+    bytes media_data = 4;
+  }
+  
+
+message AddPostResponse {
+    string error = 1;
+}
+
+
+// message ListPostRequest {
+//      string user_id = 1;
+// }
+
+// message ListPostResponse {
+//     repeated Post posts = 1;
+// }
+
+// message Post {
+//     string caption = 1;
+//     string user_id = 2;
+//     string media_url = 3;
+//     bytes media_data = 4;
+// }
+
+// message EditPostResponse {
+//     string error = 1;
+// }
+
+// message DeletePostRequest {
+//     string post_id = 1;
+// }
+
+// message DeletePostRequest {
+//     string post_id = 1;
+// }
+
+// message DeletePostResponse {
+//     string message = 1;
+// }

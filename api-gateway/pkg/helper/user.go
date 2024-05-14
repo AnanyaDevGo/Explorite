@@ -38,12 +38,14 @@ func GenerateTokenUser(user models.UserDetailResponse) (string, error) {
 func ValidateTokenUser(tokenString string) (*authCustomClaimsUser, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &authCustomClaimsUser{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			fmt.Printf("Error is %v", token.Header["alg"])
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 		return []byte("123456789"), nil
 	})
 
 	if err != nil {
+		fmt.Println("errorrrr", err)
 		return nil, err
 	}
 

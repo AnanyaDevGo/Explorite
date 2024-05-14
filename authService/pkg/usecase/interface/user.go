@@ -15,4 +15,7 @@ type UserUseCase interface {
 	GetProfile(id int) (models.UserProfile, error)
 	EditProfile(id int, user models.EditProfile) (models.EditProfile, error)
 	ChangePassword(id int, old string, password string, repassword string) error
+
+	// SavePost(postID int) error
+	// UnSavePost(postID int) error
 }

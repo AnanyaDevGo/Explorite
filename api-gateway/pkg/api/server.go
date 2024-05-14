@@ -12,7 +12,7 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler) *ServerHTTP {
+func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler, postHandler *handler.PostHandler) *ServerHTTP {
 	router := gin.New()
 	router.Use(gin.Logger())
 
@@ -32,6 +32,14 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 		userprofile.GET("/get", userHandler.GetProfile)
 		userprofile.PATCH("/edit", userHandler.EditProfile)
 		userprofile.PATCH("/change-password", userHandler.ChangePassword)
+	}
+	post := router.Group("/user/post")
+	{
+		post.POST("/add", postHandler.AddPost)
+		// post.GET("/list", postHandler.ListPost)
+		// post.PATCH("/edit", postHandler.EditPost)
+		// post.DELETE("/delete", postHandler.DeletePost)
+		// post.PATCH("/save", postHandler.SavePost)
 	}
 
 	router.Use(middleware.AdminAuthMiddleware())

@@ -174,3 +174,23 @@ func (uc *userClient) ChangePassword(userID int, oldPassword, newPassword, rePas
     }
     return nil
 }
+
+// func (uc *userClient) SavePost(postID int) error {
+//     _, err := uc.Client.SavePost(context.Background(), &pb.SavePostRequest{
+//         PostId: int32(postID),
+//     })
+//     if err != nil {
+//         return err
+//     }
+//     return nil
+// }
+
+// func (uc *userClient) UnSavePost(postID int) error {
+//     _, err := uc.Client.UnSavePost(context.Background(), &pb.UnSavePostRequest{
+//         PostId: int32(postID),
+//     })
+//     if err != nil {
+//         return err
+//     }
+//     return nil
+// }
