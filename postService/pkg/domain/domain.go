@@ -6,7 +6,7 @@ type Post struct {
 	Url      string `json:"url"`
 	Caption  string `json:"caption"`
 	MediaUrl string `json:"media_url"`
-	Votes    int    `json:"votes"`
+	//Votes    int    `json:"votes"`
 }
 type SavedPost struct {
 	UserID int
@@ -22,4 +22,10 @@ type Downvote struct {
 	ID     int `json:"id"`
 	UserID int `json:"user_id"`
 	PostID int `json:"post_id"`
+}
+type PostVote struct {
+	ID     uint `json:"id" gorm:"uniquekey; not null"`
+	UserID int  `json:"user_id"`
+	PostID int  `json:"post_id"`
+	Vote   bool `json:"vote" gorm:"default:false"`
 }

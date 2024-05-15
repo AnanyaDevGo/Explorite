@@ -137,7 +137,7 @@ func (ps *PostServer) UpvotePost(ctx context.Context, req *pb.UpvotePostRequest)
 	if err != nil {
 		return &pb.UpvotePostResponse{
 			Error: err.Error(),
-		}, nil
+		}, err
 	}
 
 	return &pb.UpvotePostResponse{}, nil
@@ -151,7 +151,7 @@ func (ps *PostServer) DownvotePost(ctx context.Context, req *pb.DownvotePostRequ
 	if err != nil {
 		return &pb.DownvotePostResponse{
 			Error: err.Error(),
-		}, nil
+		}, err
 	}
 
 	return &pb.DownvotePostResponse{}, nil

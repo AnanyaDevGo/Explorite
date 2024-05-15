@@ -15,8 +15,7 @@ type PostRepository interface {
 	// CheckIfPostSaved(postID int) (bool, error)
 	// SavePost(postID int) error
 	// UnSavePost(postID int) error
-	UpvotePost(postID int) error
-	DownvotePost(postID int) error
-	IsPostUpvoted(postID int, userID int) (bool, error)
-	IsPostDownvoted(postID int, userID int) (bool, error)
+	UpvotePost(postID, userID int) error
+	DownvotePost(postID, userID int) error
+	IsPostvoted(postID int, userID int) (bool, error)
 }

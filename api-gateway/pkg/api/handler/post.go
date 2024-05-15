@@ -171,9 +171,9 @@ func (ph *PostHandler) DeletePost(c *gin.Context) {
 //         return
 //     }
 
-//     successRes := response.ClientResponse(http.StatusOK, "Post unsaved successfully", nil, nil)
-//     c.JSON(http.StatusOK, successRes)
-// }
+//	    successRes := response.ClientResponse(http.StatusOK, "Post unsaved successfully", nil, nil)
+//	    c.JSON(http.StatusOK, successRes)
+//	}
 func (ph *PostHandler) UpvotePost(c *gin.Context) {
 	userIDInterface, exists := c.Get("id")
 	if !exists {
@@ -188,13 +188,14 @@ func (ph *PostHandler) UpvotePost(c *gin.Context) {
 		return
 	}
 
-	postID := c.Param("postid")
+	postID := c.Query("postid")
 	postIDInt, err := strconv.Atoi(postID)
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
 	}
+	fmt.Println("post idddd",  postID)
 
 	if err := ph.GRPC_Client.UpvotePost(userID, postIDInt); err != nil {
 		errorRes := response.ClientResponse(http.StatusInternalServerError, "Failed to upvote post", nil, err.Error())
@@ -220,7 +221,7 @@ func (ph *PostHandler) DownvotePost(c *gin.Context) {
 		return
 	}
 
-	postID := c.Param("postid")
+	postID := c.Query("postid")
 	postIDInt, err := strconv.Atoi(postID)
 	if err != nil {
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())

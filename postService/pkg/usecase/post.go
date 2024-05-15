@@ -123,22 +123,24 @@ func (ps *PostUseCase) UpvotePost(userID, postID int) error {
 	}
 
 	fmt.Println("posttttttt", postID)
+	fmt.Println("userrrrr ", userID)
 	exists, err := ps.postRepository.PostExists(postID)
 	if err != nil {
 		return err
 	}
+	fmt.Println("exisssst", exists)
 	if !exists {
 		return errors.New("post does not exist")
 	}
-	upvoted, err := ps.postRepository.IsPostUpvoted(postID, userID)
-	if err != nil {
-		return err
-	}
-	if upvoted {
-		return errors.New("post already upvoted")
-	}
+	// upvoted, err := ps.postRepository.IsPostvoted(postID, userID)
+	// if err != nil {
+	// 	return err
+	// }
+	// if upvoted {
+	// 	return errors.New("post already upvoted")
+	// }
 
-	err = ps.postRepository.UpvotePost(postID)
+	err = ps.postRepository.UpvotePost(postID, userID)
 	if err != nil {
 		return err
 	}
@@ -155,19 +157,21 @@ func (ps *PostUseCase) DownvotePost(userID, postID int) error {
 	if err != nil {
 		return err
 	}
+	fmt.Println("posttt existtt", exists)
 	if !exists {
 		return errors.New("post does not exist")
 	}
 
-	downvoted, err := ps.postRepository.IsPostDownvoted(postID, userID)
-	if err != nil {
-		return err
-	}
-	if downvoted {
-		return errors.New("post already downvoted")
-	}
+	// downvoted, err := ps.postRepository.IsPostvoted(postID, userID)
+	// if err != nil {
+	// 	return err
+	// }
+	// fmt.Println("voteeeee", downvoted)
+	// if !downvoted {
+	// 	return errors.New("post already downvoted")
+	// }
 
-	err = ps.postRepository.DownvotePost(postID)
+	err = ps.postRepository.DownvotePost(postID, userID)
 	if err != nil {
 		return err
 	}

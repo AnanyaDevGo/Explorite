@@ -26,7 +26,6 @@ func NewUserUseCase(repository interfaces.UserRepository) services.UserUseCase {
 	}
 }
 
-
 var InternalError = "Internal Server Error"
 
 func (uu *userUseCase) UserSignUp(userDetails models.UserSignup) (*domain.TokenUser, error) {
@@ -44,6 +43,14 @@ func (uu *userUseCase) UserSignUp(userDetails models.UserSignup) (*domain.TokenU
 	}
 	userDetails.Password = hashPassword
 
+	_, err = uu.userRepository.ValidateAlphabets(userDetails.Firstname)
+	if err != nil {
+		return &domain.TokenUser{}, err
+	}
+	_, err = uu.userRepository.ValidateAlphabets(userDetails.Lastname)
+	if err != nil {
+		return &domain.TokenUser{}, err
+	}
 	userData, err := uu.userRepository.UserSignUp(userDetails)
 	if err != nil {
 		return &domain.TokenUser{}, errors.New("could not add the user")
@@ -215,28 +222,28 @@ func (r *userUseCase) OtpVerification(email, otp string) (bool, error) {
 	return verified, nil
 }
 func (r *userUseCase) ChangePassword(id int, old string, password string, repassword string) error {
-    if password == "" {
-        return errors.New("password cannot be empty")
-    }
+	if password == "" {
+		return errors.New("password cannot be empty")
+	}
 
-    userPassword, err := r.userRepository.GetPassword(id)
-    if err != nil {
-        return errors.New(InternalError)
-    }
+	userPassword, err := r.userRepository.GetPassword(id)
+	if err != nil {
+		return errors.New(InternalError)
+	}
 
-    err = bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(old))
-    if err != nil {
-        return errors.New("password incorrect")
-    }
+	err = bcrypt.CompareHashAndPassword([]byte(userPassword), []byte(old))
+	if err != nil {
+		return errors.New("password incorrect")
+	}
 
-    if password != repassword {
-        return errors.New("passwords does not match")
-    }
+	if password != repassword {
+		return errors.New("passwords does not match")
+	}
 
-    newpassword, err := helper.PasswordHash(password)
-    if err != nil {
-        return errors.New("error in hashing password")
-    }
+	newpassword, err := helper.PasswordHash(password)
+	if err != nil {
+		return errors.New("error in hashing password")
+	}
 
-    return r.userRepository.ChangePassword(id, string(newpassword))
+	return r.userRepository.ChangePassword(id, string(newpassword))
 }

@@ -40,8 +40,8 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 		post.PATCH("/edit", postHandler.EditPost)
 		post.DELETE("/delete/:postid", postHandler.DeletePost)
 		// post.PATCH("/save", postHandler.SavePost)
-		post.PATCH("/upvote/:postid", postHandler.UpvotePost)
-		post.PATCH("/downvote/:postid", postHandler.DownvotePost)
+		post.PATCH("/upvote", postHandler.UpvotePost)
+		post.PATCH("/downvote", postHandler.DownvotePost)
 	}
 
 	router.Use(middleware.AdminAuthMiddleware())

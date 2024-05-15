@@ -2,7 +2,8 @@ package repository
 
 import (
 	"errors"
-	//"postservice/pkg/domain"
+	"fmt"
+
 	"postservice/pkg/domain"
 	interfaces "postservice/pkg/repository/interface"
 	"postservice/pkg/utils/models"
@@ -58,14 +59,16 @@ func (pr *postRepository) DeletePostByID(postID int) error {
 	return nil
 }
 func (pr *postRepository) PostExists(postID int) (bool, error) {
+
 	var count int64
 	query := "SELECT COUNT(*) FROM posts WHERE id = ?"
 
-	if err := pr.DB.Raw(query, postID).Count(&count).Error; err != nil {
+	if err := pr.DB.Raw(query, postID).Scan(&count).Error; err != nil {
+		fmt.Println("errorrrrr", err)
 		return false, err
 	}
 
-	return count == 1, nil
+	return count > 0, nil
 }
 
 // func (pr *postRepository) SavePost(postID int) error {
@@ -109,24 +112,25 @@ func (pr *postRepository) PostExists(postID int) (bool, error) {
 // 	return count > 0, nil
 // }
 
-func (pr *postRepository) UpvotePost(postID int) error {
-	query := "UPDATE posts SET votes = votes + 1 WHERE id = ?"
+func (pr *postRepository) UpvotePost(postID, userID int) error {
+	query := "insert into post_votes (user_id, post_id, vote)values(?,?,?)"
 
-	if err := pr.DB.Exec(query, postID).Error; err != nil {
+	if err := pr.DB.Exec(query, postID, userID, true).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
-func (pr *postRepository) DownvotePost(postID int) error {
-	query := "UPDATE posts SET votes = votes - 1 WHERE id = ?"
+func (pr *postRepository) DownvotePost(postID, userID int) error {
+	query := "UPDATE post_votes SET vote = ? WHERE user_id = ? AND post_id = ?"
 
-	if err := pr.DB.Exec(query, postID).Error; err != nil {
+	if err := pr.DB.Exec(query, false, userID, postID).Error; err != nil {
 		return err
 	}
 
 	return nil
 }
+
 func (pr *postRepository) GetPostByID(postID int) (domain.Post, error) {
 	var post domain.Post
 	if err := pr.DB.First(&post, postID).Error; err != nil {
@@ -134,20 +138,25 @@ func (pr *postRepository) GetPostByID(postID int) (domain.Post, error) {
 	}
 	return post, nil
 }
-func (pr *postRepository) IsPostUpvoted(postID int, userID int) (bool, error) {
-	var count int64
-	query := "SELECT COUNT(*) FROM upvotes WHERE post_id = ? AND user_id = ?"
-	if err := pr.DB.Raw(query, postID, userID).Scan(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
 
-func (pr *postRepository) IsPostDownvoted(postID int, userID int) (bool, error) {
-	var count int64
-	query := "SELECT COUNT(*) FROM downvotes WHERE post_id = ? AND user_id = ?"
-	if err := pr.DB.Raw(query, postID, userID).Scan(&count).Error; err != nil {
+// func (pr *postRepository) IsPostUpvoted(postID int, userID int) (bool, error) {
+// 	var count int64
+// 	query := "SELECT COUNT(*) FROM post_votes WHERE post_id = ? AND user_id = ?"
+// 	if err := pr.DB.Raw(query, postID, userID).Scan(&count).Error; err != nil {
+// 		return false, err
+// 	}
+// 	return count > 0, nil
+// }
+
+func (pr *postRepository) IsPostvoted(postID int, userID int) (bool, error) {
+	var vote bool
+	query := "SELECT vote FROM post_votes WHERE post_id = ? AND user_id = ?"
+	err := pr.DB.Raw(query, postID, userID).Scan(&vote).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return false, nil
+		}
 		return false, err
 	}
-	return count > 0, nil
+	return vote, nil
 }

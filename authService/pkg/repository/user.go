@@ -144,6 +144,7 @@ func (ur *userRepository) IsValidWebsite(website string) bool {
 	return match
 }
 
+
 func (ur *userRepository) EditProfile(id int, user models.EditProfile) (models.EditProfile, error) {
 	var result models.EditProfile
 
