@@ -19,7 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Post_AddPost_FullMethodName = "/post.Post/AddPost"
+	Post_AddPost_FullMethodName      = "/post.Post/AddPost"
+	Post_ListPost_FullMethodName     = "/post.Post/ListPost"
+	Post_EditPost_FullMethodName     = "/post.Post/EditPost"
+	Post_DeletePost_FullMethodName   = "/post.Post/DeletePost"
+	Post_UpvotePost_FullMethodName   = "/post.Post/UpvotePost"
+	Post_DownvotePost_FullMethodName = "/post.Post/DownvotePost"
 )
 
 // PostClient is the client API for Post service.
@@ -27,6 +32,13 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type PostClient interface {
 	AddPost(ctx context.Context, in *AddPostRequest, opts ...grpc.CallOption) (*AddPostResponse, error)
+	ListPost(ctx context.Context, in *ListPostRequest, opts ...grpc.CallOption) (*ListPostResponse, error)
+	EditPost(ctx context.Context, in *EditPostRequest, opts ...grpc.CallOption) (*EditPostResponse, error)
+	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
+	// rpc SavePost(SavePostRequest) returns (SavePostResponse);
+	// rpc UnSavePost(UnSavePostRequest) returns (UnSavePostResponse);
+	UpvotePost(ctx context.Context, in *UpvotePostRequest, opts ...grpc.CallOption) (*UpvotePostResponse, error)
+	DownvotePost(ctx context.Context, in *DownvotePostRequest, opts ...grpc.CallOption) (*DownvotePostResponse, error)
 }
 
 type postClient struct {
@@ -46,11 +58,63 @@ func (c *postClient) AddPost(ctx context.Context, in *AddPostRequest, opts ...gr
 	return out, nil
 }
 
+func (c *postClient) ListPost(ctx context.Context, in *ListPostRequest, opts ...grpc.CallOption) (*ListPostResponse, error) {
+	out := new(ListPostResponse)
+	err := c.cc.Invoke(ctx, Post_ListPost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) EditPost(ctx context.Context, in *EditPostRequest, opts ...grpc.CallOption) (*EditPostResponse, error) {
+	out := new(EditPostResponse)
+	err := c.cc.Invoke(ctx, Post_EditPost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error) {
+	out := new(DeletePostResponse)
+	err := c.cc.Invoke(ctx, Post_DeletePost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) UpvotePost(ctx context.Context, in *UpvotePostRequest, opts ...grpc.CallOption) (*UpvotePostResponse, error) {
+	out := new(UpvotePostResponse)
+	err := c.cc.Invoke(ctx, Post_UpvotePost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) DownvotePost(ctx context.Context, in *DownvotePostRequest, opts ...grpc.CallOption) (*DownvotePostResponse, error) {
+	out := new(DownvotePostResponse)
+	err := c.cc.Invoke(ctx, Post_DownvotePost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PostServer is the server API for Post service.
 // All implementations must embed UnimplementedPostServer
 // for forward compatibility
 type PostServer interface {
 	AddPost(context.Context, *AddPostRequest) (*AddPostResponse, error)
+	ListPost(context.Context, *ListPostRequest) (*ListPostResponse, error)
+	EditPost(context.Context, *EditPostRequest) (*EditPostResponse, error)
+	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
+	// rpc SavePost(SavePostRequest) returns (SavePostResponse);
+	// rpc UnSavePost(UnSavePostRequest) returns (UnSavePostResponse);
+	UpvotePost(context.Context, *UpvotePostRequest) (*UpvotePostResponse, error)
+	DownvotePost(context.Context, *DownvotePostRequest) (*DownvotePostResponse, error)
 	mustEmbedUnimplementedPostServer()
 }
 
@@ -60,6 +124,21 @@ type UnimplementedPostServer struct {
 
 func (UnimplementedPostServer) AddPost(context.Context, *AddPostRequest) (*AddPostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddPost not implemented")
+}
+func (UnimplementedPostServer) ListPost(context.Context, *ListPostRequest) (*ListPostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPost not implemented")
+}
+func (UnimplementedPostServer) EditPost(context.Context, *EditPostRequest) (*EditPostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EditPost not implemented")
+}
+func (UnimplementedPostServer) DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeletePost not implemented")
+}
+func (UnimplementedPostServer) UpvotePost(context.Context, *UpvotePostRequest) (*UpvotePostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpvotePost not implemented")
+}
+func (UnimplementedPostServer) DownvotePost(context.Context, *DownvotePostRequest) (*DownvotePostResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DownvotePost not implemented")
 }
 func (UnimplementedPostServer) mustEmbedUnimplementedPostServer() {}
 
@@ -92,6 +171,96 @@ func _Post_AddPost_Handler(srv interface{}, ctx context.Context, dec func(interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Post_ListPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).ListPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_ListPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).ListPost(ctx, req.(*ListPostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_EditPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditPostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).EditPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_EditPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).EditPost(ctx, req.(*EditPostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_DeletePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletePostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).DeletePost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_DeletePost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).DeletePost(ctx, req.(*DeletePostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_UpvotePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpvotePostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).UpvotePost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_UpvotePost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).UpvotePost(ctx, req.(*UpvotePostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_DownvotePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DownvotePostRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).DownvotePost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_DownvotePost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).DownvotePost(ctx, req.(*DownvotePostRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Post_ServiceDesc is the grpc.ServiceDesc for Post service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +271,26 @@ var Post_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddPost",
 			Handler:    _Post_AddPost_Handler,
+		},
+		{
+			MethodName: "ListPost",
+			Handler:    _Post_ListPost_Handler,
+		},
+		{
+			MethodName: "EditPost",
+			Handler:    _Post_EditPost_Handler,
+		},
+		{
+			MethodName: "DeletePost",
+			Handler:    _Post_DeletePost_Handler,
+		},
+		{
+			MethodName: "UpvotePost",
+			Handler:    _Post_UpvotePost_Handler,
+		},
+		{
+			MethodName: "DownvotePost",
+			Handler:    _Post_DownvotePost_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

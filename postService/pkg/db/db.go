@@ -21,5 +21,11 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	if err := db.AutoMigrate(&domain.Post{}); err != nil {
 		return nil, err
 	}
+	if err := db.AutoMigrate(&domain.Upvote{}); err != nil {
+		return nil, err
+	}
+	if err := db.AutoMigrate(&domain.Downvote{}); err != nil {
+		return nil, err
+	}
 	return db, nil
 }

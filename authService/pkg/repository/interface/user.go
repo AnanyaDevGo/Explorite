@@ -25,7 +25,4 @@ type UserRepository interface {
 	ChangePassword(id int, password string) error
 	GetPassword(id int) (string, error)
 
-	// CheckIfPostSaved(postID int) (bool, error)
-	// SavePost(postID int) error
-	// UnSavePost(postID int) error
 }

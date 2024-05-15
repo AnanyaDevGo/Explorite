@@ -39,59 +39,120 @@ func (ps *PostServer) AddPost(ctx context.Context, req *pb.AddPostRequest) (*pb.
 	}, nil
 }
 
-// func (ps *PostServer) ListPost(ctx context.Context, req *pb.ListPostRequest) (*pb.ListPostResponse, error) {
-//     posts, err := ps.postUsecase.ListPost()
+func (ps *PostServer) ListPost(ctx context.Context, req *pb.ListPostRequest) (*pb.ListPostResponse, error) {
+	posts, err := ps.postUsecase.ListPost()
+	if err != nil {
+		return nil, err
+	}
+
+	var pbPosts []*pb.Posts
+	for _, post := range posts {
+		pbPost := &pb.Posts{
+			Caption:   post.Caption,
+			UserId:    post.UserId,
+			MediaUrl:  post.MediaURL,
+			MediaData: post.Media,
+		}
+		pbPosts = append(pbPosts, pbPost)
+	}
+
+	response := &pb.ListPostResponse{
+		Posts: pbPosts,
+	}
+	return response, nil
+}
+
+func (ps *PostServer) EditPost(ctx context.Context, req *pb.EditPostRequest) (*pb.EditPostResponse, error) {
+	id := req.UserId
+	caption := req.Caption
+	postId := req.PostId
+
+	editPost := models.EditPost{
+		Caption: caption,
+		PostId:  postId,
+	}
+
+	err := ps.postUsecase.EditPost(int(id), editPost)
+	if err != nil {
+		return nil, err
+	}
+
+	response := &pb.EditPostResponse{
+		Error: "",
+	}
+	return response, nil
+}
+
+func (ps *PostServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*pb.DeletePostResponse, error) {
+	postID := req.PostId
+
+	err := ps.postUsecase.DeletePost(int(postID))
+	if err != nil {
+		return nil, err
+	}
+	response := &pb.DeletePostResponse{
+		Message: "Post deleted successfully",
+	}
+	return response, nil
+}
+
+// func (ps *PostServer) SavePost(ctx context.Context, req *pb.SavePostRequest) (*pb.SavePostResponse, error) {
+//     postID := req.PostId
+
+//     err := ps.postUsecase.SavePost(postID)
 //     if err != nil {
-//         return nil, err
+//         return &pb.SavePostResponse{
+//             Success:      false,
+//             ErrorMessage: err.Error(),
+//         }, nil
 //     }
 
-//     var pbPosts []*pb.Post
-//     for _, post := range posts {
-//         pbPost := &pb.Post{
-//             Caption:   post.Caption,
-//             UserId:    post.UserId,
-//             MediaUrl:  post.MediaURL,
-//             MediaData: post.Media,
-//         }
-//         pbPosts = append(pbPosts, pbPost)
-//     }
-
-//     response := &pb.ListPostResponse{
-//         Posts: pbPosts,
-//     }
-//     return response, nil
+//     return &pb.SavePostResponse{
+//         Success: true,
+//     }, nil
 // }
 
-// func (ps *PostServer) EditPost(ctx context.Context, req *pb.EditPostRequest) (*pb.EditPostResponse, error) {
-//     id := int(req.Id)
-//     caption := req.Caption
-//     postId := req.PostId
+// func (ps *PostServer) UnSavePost(ctx context.Context, req *pb.UnSavePostRequest) (*pb.UnSavePostResponse, error) {
+//     postID := req.PostId
 
-//     editPost := models.EditPost{
-//         Caption: caption,
-//         PostId:  postId,
-//     }
-
-//     err := ps.postUsecase.EditPost(id, editPost)
+//     err := ps.postUsecase.UnSavePost(postID)
 //     if err != nil {
-//         return nil, err
+//         return &pb.UnSavePostResponse{
+//             Success:      false,
+//             ErrorMessage: err.Error(),
+//         }, nil
 //     }
 
-//     response := &pb.EditPostResponse{
-//         Error: "",
-//     }
-//     return response, nil
+//     return &pb.UnSavePostResponse{
+//         Success: true,
+//     }, nil
 // }
 
-// func (ps *PostServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest) (*pb.DeletePostResponse, error) {
-// 	postID := req.PostId
+func (ps *PostServer) UpvotePost(ctx context.Context, req *pb.UpvotePostRequest) (*pb.UpvotePostResponse, error) {
+	fmt.Println("hereeeee")
+	userID := req.UserId
+	postID := req.PostId
 
-// 	err := ps.postUsecase.DeletePost(postID)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	response := &pb.DeletePostResponse{
-// 		Message: "Post deleted successfully",
-// 	}
-// 	return response, nil
-// }
+	err := ps.postUsecase.UpvotePost(int(userID), int(postID))
+	if err != nil {
+		return &pb.UpvotePostResponse{
+			Error: err.Error(),
+		}, nil
+	}
+
+	return &pb.UpvotePostResponse{}, nil
+}
+
+func (ps *PostServer) DownvotePost(ctx context.Context, req *pb.DownvotePostRequest) (*pb.DownvotePostResponse, error) {
+	userID := req.UserId
+	postID := req.PostId
+
+	err := ps.postUsecase.DownvotePost(int(userID), int(postID))
+	if err != nil {
+		return &pb.DownvotePostResponse{
+			Error: err.Error(),
+		}, nil
+	}
+
+	return &pb.DownvotePostResponse{}, nil
+}

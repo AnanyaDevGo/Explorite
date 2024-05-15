@@ -49,7 +49,7 @@ func (uc *PostUseCase) AddPost(post models.AddPost) error {
 	if err != nil {
 		return err
 	}
-	err = uc.postRepository.AddPost(userID, post.Caption, url)
+	err = uc.postRepository.AddPost(userID, post.Caption, url, post.MediaURL)
 	if err != nil {
 		return err
 	}
@@ -63,40 +63,114 @@ func (uc *PostUseCase) AddPost(post models.AddPost) error {
 	// }
 }
 
-// func (ps *PostUseCase) ListPost() ([]models.AddPost, error) {
-//     posts, err := ps.postRepository.ListPost()
-//     if err != nil {
-//         return nil, err
-//     }
+func (ps *PostUseCase) ListPost() ([]models.AddPost, error) {
+	posts, err := ps.postRepository.ListPost()
+	if err != nil {
+		return nil, err
+	}
 
-//     return posts, nil
-// }
+	return posts, nil
+}
+func (ps *PostUseCase) EditPost(postID int, post models.EditPost) error {
+	if postID <= 0 {
+		return errors.New("invalid post ID")
+	}
 
-// func (ps *PostUseCase) EditPost(postId int, post models.EditPost) error {
-// 	if post.Caption == "" {
-// 		return errors.New("caption cannot be empty")
-// 	}
-// 	if postId <= 0 {
-// 		return errors.New("invalid post ID")
-// 	}
+	exists, err := ps.postRepository.PostExists(postID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("post does not exist")
+	}
 
-// 	err := ps.postRepository.UpdatePostByID(postId, post)
-// 	if err != nil {
-// 		return err
-// 	}
+	if post.Caption == "" {
+		return errors.New("caption cannot be empty")
+	}
 
-// 	return nil
-// }
+	err = ps.postRepository.UpdatePostByID(postID, post)
+	if err != nil {
+		return err
+	}
 
-// func (ps *PostUseCase) DeletePost(postID int) error {
-// 	if postID <= 0 {
-// 		return errors.New("invalid post ID")
-// 	}
+	return nil
+}
 
-// 	err := ps.postRepository.DeletePostByID(postID)
-// 	if err != nil {
-// 		return err
-// 	}
+func (ps *PostUseCase) DeletePost(postID int) error {
+	if postID <= 0 {
+		return errors.New("invalid post ID")
+	}
 
-// 	return nil
-// }
+	exists, err := ps.postRepository.PostExists(postID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("post does not exist")
+	}
+
+	err = ps.postRepository.DeletePostByID(postID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ps *PostUseCase) UpvotePost(userID, postID int) error {
+	if postID <= 0 {
+		return errors.New("invalid post ID")
+	}
+
+	fmt.Println("posttttttt", postID)
+	exists, err := ps.postRepository.PostExists(postID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("post does not exist")
+	}
+	upvoted, err := ps.postRepository.IsPostUpvoted(postID, userID)
+	if err != nil {
+		return err
+	}
+	if upvoted {
+		return errors.New("post already upvoted")
+	}
+
+	err = ps.postRepository.UpvotePost(postID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ps *PostUseCase) DownvotePost(userID, postID int) error {
+	if postID <= 0 {
+		return errors.New("invalid post ID")
+	}
+
+	exists, err := ps.postRepository.PostExists(postID)
+	if err != nil {
+		return err
+	}
+	if !exists {
+		return errors.New("post does not exist")
+	}
+
+	downvoted, err := ps.postRepository.IsPostDownvoted(postID, userID)
+	if err != nil {
+		return err
+	}
+	if downvoted {
+		return errors.New("post already downvoted")
+	}
+
+	err = ps.postRepository.DownvotePost(postID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -206,34 +206,3 @@ func (us *UserServer) ChangePassword(ctx context.Context, req *pb.ChangePassword
 		Status: 200,
 	}, nil
 }
-// func (us *UserServer) SavePost(ctx context.Context, req *pb.SavePostRequest) (*pb.SavePostResponse, error) {
-//     postID := req.PostId
-
-//     err := us.userUseCase.SavePost(postID)
-//     if err != nil {
-//         return &pb.SavePostResponse{
-//             Success:      false,
-//             ErrorMessage: err.Error(),
-//         }, nil
-//     }
-
-//     return &pb.SavePostResponse{
-//         Success: true,
-//     }, nil
-// }
-
-// func (us *UserServer) UnSavePost(ctx context.Context, req *pb.UnSavePostRequest) (*pb.UnSavePostResponse, error) {
-//     postID := req.PostId
-
-//     err := us.userUseCase.UnSavePost(postID)
-//     if err != nil {
-//         return &pb.UnSavePostResponse{
-//             Success:      false,
-//             ErrorMessage: err.Error(),
-//         }, nil
-//     }
-
-//     return &pb.UnSavePostResponse{
-//         Success: true,
-//     }, nil
-// }

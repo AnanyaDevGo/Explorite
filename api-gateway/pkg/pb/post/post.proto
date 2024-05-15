@@ -6,9 +6,13 @@ option go_package = "./pkg/pb/post";
 
 service Post {
     rpc AddPost(AddPostRequest) returns (AddPostResponse);
-    //rpc ListPost(ListPostRequest) returns (ListPostResponse);
-    // rpc EditPost(EditPostRequest) returns (EditPostResponse);
-    // rpc DeletePost(DeletePostRequest) returns (DeletePostResponse);
+    rpc ListPost(ListPostRequest) returns (ListPostResponse);
+    rpc EditPost(EditPostRequest) returns (EditPostResponse);
+    rpc DeletePost(DeletePostRequest) returns (DeletePostResponse);
+    // rpc SavePost(SavePostRequest) returns (SavePostResponse);
+    // rpc UnSavePost(UnSavePostRequest) returns (UnSavePostResponse);
+    rpc UpvotePost(UpvotePostRequest) returns (UpvotePostResponse);
+    rpc DownvotePost(DownvotePostRequest) returns (DownvotePostResponse);
 }
 
 message AddPostRequest {
@@ -24,33 +28,70 @@ message AddPostResponse {
 }
 
 
-// message ListPostRequest {
-//      string user_id = 1;
+message ListPostRequest {
+     string user_id = 1;
+}
+
+message ListPostResponse {
+    repeated Posts posts = 1;
+}
+
+message Posts {
+    string caption = 1;
+    string user_id = 2;
+    string media_url = 3;
+    bytes media_data = 4;
+}
+
+message EditPostResponse {
+    string error = 1;
+}
+
+message EditPostRequest {
+    string post_id = 1;
+    string caption = 2;
+    int32 user_id = 3;
+}
+
+message DeletePostRequest {
+    int32 post_id = 1;
+}
+
+message DeletePostResponse {
+    string message = 1;
+}
+// message SavePostRequest {
+//     int32 post_id = 1;
 // }
 
-// message ListPostResponse {
-//     repeated Post posts = 1;
+// message SavePostResponse {
+//     bool success = 1;
+//     string error_message = 2;
 // }
 
-// message Post {
-//     string caption = 1;
-//     string user_id = 2;
-//     string media_url = 3;
-//     bytes media_data = 4;
+// message UnSavePostRequest {
+//     int32 post_id = 1;
 // }
 
-// message EditPostResponse {
-//     string error = 1;
+// message UnSavePostResponse {
+//     bool success = 1;
+//     string error_message = 2;
 // }
 
-// message DeletePostRequest {
-//     string post_id = 1;
-// }
+message UpvotePostRequest {
+    int32 user_id = 1;
+    int32 post_id = 2;
+}
 
-// message DeletePostRequest {
-//     string post_id = 1;
-// }
+message UpvotePostResponse {
+    string error = 1;
+}
 
-// message DeletePostResponse {
-//     string message = 1;
-// }
+message DownvotePostRequest {
+    int32 user_id = 1;
+    int32 post_id = 2;
+}
+
+message DownvotePostResponse {
+    string error = 1;
+}

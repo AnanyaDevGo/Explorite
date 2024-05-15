@@ -13,8 +13,6 @@ service User {
     rpc UserOTPLogin(UserOTPLoginRequest) returns (UserOTPLoginResponse); 
     rpc OtpVerification(OtpVerificationRequest) returns (OtpVerificationResponse);
     rpc ChangePassword(ChangePasswordRequest) returns (ChangePasswordResponse);
-    // rpc SavePost(SavePostRequest) returns (SavePostResponse);
-    // rpc UnSavePost(UnSavePostRequest) returns (UnSavePostResponse);
 }
 
 message UserSignupRequest {
@@ -142,20 +140,3 @@ message ChangePasswordResponse {
     string error = 2;
 }
 
-// message SavePostRequest {
-//     int32 post_id = 1;
-// }
-
-// message SavePostResponse {
-//     bool success = 1;
-//     string error_message = 2;
-// }
-
-// message UnSavePostRequest {
-//     int32 post_id = 1;
-// }
-
-// message UnSavePostResponse {
-//     bool success = 1;
-//     string error_message = 2;
-// }
