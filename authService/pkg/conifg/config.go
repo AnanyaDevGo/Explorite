@@ -5,25 +5,20 @@ import (
 )
 
 type Config struct {
-	DBHost     string `mapstructure:"DB_HOST"`
-	DBName     string `mapstructure:"DB_NAME"`
-	DBUser     string `mapstructure:"DB_USER"`
-	DBPort     string `mapstructure:"DB_PORT"`
-	DBPassword string `mapstructure:"DB_PASSWORD"`
-	Port       string `mapstructure:"PORT"`
-	Smtp       string `mapstructure:"smtp"`
-}
-type Smtp struct {
-	SmtpSender   string `mapstructure:"SMTP_SENDER"`
-	SmtpPassword string `mapstructure:"SMTP_APPKEY"`
-	SmtpHost     string `mapstructure:"SMTP_HOST"`
-	SmtpPort     string `mapstructure:"SMTP_PORT"`
-}
-var envs = []string{
-	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "PORT",
-	"SMTP_SENDER", "SMTP_APPKEY", "SMTP_HOST", "SMTP_PORT",
+	Port          string `mapstructure:"PORT"`
+	DBHost        string `mapstructure:"DB_HOST"`
+	DBName        string `mapstructure:"DB_NAME"`
+	DBUser        string `mapstructure:"DB_USER"`
+	DBPassword    string `mapstructure:"DB_PASSWORD"`
+	DBPort        string `mapstructure:"DB_PORT"`
+	ExploriteChat string `mapstructure:"Explorite_chat"`
+	KafkaBrokers  string `mapstructure:"KAFKA_BROKERS"`
+	KafkaTopic    string `mapstructure:"KAFKA_TOPIC"`
 }
 
+var envs = []string{
+	"PORT", "DB_HOST", "DB_NAME", "DB_USER", "DB_PASSWORD", "DB_PORT", "Explorite_chat", "KAFKA_BROKERS", "KAFKA_TOPIC",
+}
 
 func LoadConfig() (Config, error) {
 	var config Config

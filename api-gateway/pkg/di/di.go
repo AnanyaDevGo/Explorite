@@ -5,6 +5,7 @@ import (
 	"ExploriteGateway/pkg/api/handler"
 	"ExploriteGateway/pkg/client"
 	"ExploriteGateway/pkg/config"
+	"ExploriteGateway/pkg/helper"
 )
 
 func InitializeAPI(cfg config.Config) (*server.ServerHTTP, error) {
@@ -20,12 +21,14 @@ func InitializeAPI(cfg config.Config) (*server.ServerHTTP, error) {
 	if err != nil {
 		return nil, err
 	}
+	chatClient := client.NewChatClient(cfg)
 
 	adminHandler := handler.NewAdminHandler(adminClient)
 	userHandler := handler.NewUserHandler(userClient)
 	postHandler := handler.NewPostHandler(postClient)
+	chatHandler := handler.NewChatHandler(chatClient,helper.NewHelper(&cfg))
 
-	serverHTTP := server.NewServerHTTP(adminHandler, userHandler, postHandler)
+	serverHTTP := server.NewServerHTTP(adminHandler, userHandler, postHandler, chatHandler)
 
 	return serverHTTP, nil
 }

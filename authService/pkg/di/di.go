@@ -10,15 +10,15 @@ import (
 )
 
 func IntializeAPI(cfg config.Config) (*server.Server, error) {
-	gornDB, err := db.ConnectDatabase(cfg)
+	gormDB, err := db.ConnectDatabase(cfg)
 	if err != nil {
 		return nil, err
 	}
-	adminRepository := repository.NewAdminRepository(gornDB)
+	adminRepository := repository.NewAdminRepository(gormDB)
 	adminUseCase := usecase.NewAdminUseCase(adminRepository)
 	adminServiceServer := service.NewAdminServer(adminUseCase)
 
-	userRepository := repository.NewUserRepository(gornDB)
+	userRepository := repository.NewUserRepository(gormDB)
 	userUsecase := usecase.NewUserUseCase(userRepository)
 	userServiceServer := service.NewUserServer(userUsecase)
 
