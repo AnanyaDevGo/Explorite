@@ -39,11 +39,10 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 		post.GET("/list", postHandler.ListPost)
 		post.PATCH("/edit", postHandler.EditPost)
 		post.DELETE("/delete/:postid", postHandler.DeletePost)
-		// post.PATCH("/save", postHandler.SavePost)
 		post.PATCH("/upvote", postHandler.UpvotePost)
 		post.PATCH("/downvote", postHandler.DownvotePost)
 	}
-	chat := router.Group("/chat")
+	chat := router.Group("/user/chat")
 	{
 		chat.GET("", chatHandler.FriendMessage)
 		chat.GET("/message", chatHandler.GetChat)

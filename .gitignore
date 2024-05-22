@@ -1,0 +1,4 @@
+api-gateway/.env
+authService/.env
+chatService/.env
+postService/.env

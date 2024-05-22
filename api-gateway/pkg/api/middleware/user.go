@@ -25,6 +25,7 @@ func UserAuthMiddleware() gin.HandlerFunc {
 		splitted := strings.Split(tokenHeader, " ")
 		if len(splitted) != 2 {
 			response := response.ClientResponse(http.StatusUnauthorized, "Invalid Token Format", nil, nil)
+			fmt.Println("autherisatiuon is working", tokenHeader)
 			c.JSON(http.StatusUnauthorized, response)
 			c.Abort()
 			return
@@ -43,7 +44,6 @@ func UserAuthMiddleware() gin.HandlerFunc {
 
 		fmt.Println("claims id", tokenClaims.ID)
 		c.Set("tokenClaims", tokenClaims)
-
 		c.Next()
 	}
 }
