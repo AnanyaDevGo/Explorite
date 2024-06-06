@@ -27,6 +27,7 @@ const (
 	User_UserOTPLogin_FullMethodName    = "/user.User/UserOTPLogin"
 	User_OtpVerification_FullMethodName = "/user.User/OtpVerification"
 	User_ChangePassword_FullMethodName  = "/user.User/ChangePassword"
+	User_SendFollowReq_FullMethodName   = "/user.User/SendFollowReq"
 )
 
 // UserClient is the client API for User service.
@@ -41,6 +42,7 @@ type UserClient interface {
 	UserOTPLogin(ctx context.Context, in *UserOTPLoginRequest, opts ...grpc.CallOption) (*UserOTPLoginResponse, error)
 	OtpVerification(ctx context.Context, in *OtpVerificationRequest, opts ...grpc.CallOption) (*OtpVerificationResponse, error)
 	ChangePassword(ctx context.Context, in *ChangePasswordRequest, opts ...grpc.CallOption) (*ChangePasswordResponse, error)
+	SendFollowReq(ctx context.Context, in *SendFollowReqRequest, opts ...grpc.CallOption) (*SendFollowReqResponse, error)
 }
 
 type userClient struct {
@@ -123,6 +125,15 @@ func (c *userClient) ChangePassword(ctx context.Context, in *ChangePasswordReque
 	return out, nil
 }
 
+func (c *userClient) SendFollowReq(ctx context.Context, in *SendFollowReqRequest, opts ...grpc.CallOption) (*SendFollowReqResponse, error) {
+	out := new(SendFollowReqResponse)
+	err := c.cc.Invoke(ctx, User_SendFollowReq_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -135,6 +146,7 @@ type UserServer interface {
 	UserOTPLogin(context.Context, *UserOTPLoginRequest) (*UserOTPLoginResponse, error)
 	OtpVerification(context.Context, *OtpVerificationRequest) (*OtpVerificationResponse, error)
 	ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error)
+	SendFollowReq(context.Context, *SendFollowReqRequest) (*SendFollowReqResponse, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -165,6 +177,9 @@ func (UnimplementedUserServer) OtpVerification(context.Context, *OtpVerification
 }
 func (UnimplementedUserServer) ChangePassword(context.Context, *ChangePasswordRequest) (*ChangePasswordResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ChangePassword not implemented")
+}
+func (UnimplementedUserServer) SendFollowReq(context.Context, *SendFollowReqRequest) (*SendFollowReqResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SendFollowReq not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -323,6 +338,24 @@ func _User_ChangePassword_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_SendFollowReq_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SendFollowReqRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).SendFollowReq(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_SendFollowReq_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).SendFollowReq(ctx, req.(*SendFollowReqRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -361,6 +394,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ChangePassword",
 			Handler:    _User_ChangePassword_Handler,
+		},
+		{
+			MethodName: "SendFollowReq",
+			Handler:    _User_SendFollowReq_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

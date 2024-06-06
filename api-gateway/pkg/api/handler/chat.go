@@ -32,8 +32,8 @@ func NewChatHandler(chatClient interfaces.ChatClient, helper *helper.Helper) *Ch
 		helper:      helper,
 	}
 }
-func (ch *ChatHandler) FriendMessage(c *gin.Context) {
 
+func (ch *ChatHandler) FriendMessage(c *gin.Context) {
 	fmt.Println("message")
 
 	tokenString := c.Request.Header.Get("Authorization")
@@ -46,14 +46,14 @@ func (ch *ChatHandler) FriendMessage(c *gin.Context) {
 
 	splitToken[1] = strings.TrimSpace(splitToken[1])
 	userID, err := ch.helper.ValidateToken(splitToken[1])
-	fmt.Println("validate token result ", userID, err)
+	fmt.Println("validate token result", userID, err)
 	if err != nil {
 		errs := response.ClientResponse(http.StatusUnauthorized, "Invalid token", nil, err.Error())
 		c.JSON(http.StatusUnauthorized, errs)
 		return
 	}
 
-	fmt.Println("upgrading ")
+	fmt.Println("upgrading")
 	conn, err := upgrade.Upgrade(c.Writer, c.Request, nil)
 	if err != nil {
 		errs := response.ClientResponse(http.StatusBadRequest, "Websocket Connection Issue", nil, err.Error())
@@ -102,4 +102,53 @@ func (ch *ChatHandler) GetChat(c *gin.Context) {
 
 	errs := response.ClientResponse(http.StatusOK, "Successfully retrieved chat details", result, nil)
 	c.JSON(http.StatusOK, errs)
+}
+
+func (ch *ChatHandler) GroupMessage(c *gin.Context) {
+	tokenString := c.Request.Header.Get("Authorization")
+	splitToken := strings.Split(tokenString, " ")
+	if tokenString == "" {
+		errs := response.ClientResponse(http.StatusUnauthorized, "Missing Authorization header", nil, "")
+		c.JSON(http.StatusUnauthorized, errs)
+		return
+	}
+
+	splitToken[1] = strings.TrimSpace(splitToken[1])
+	userID, err := ch.helper.ValidateToken(splitToken[1])
+	if err != nil {
+		errs := response.ClientResponse(http.StatusUnauthorized, "Invalid token", nil, err.Error())
+		c.JSON(http.StatusUnauthorized, errs)
+		return
+	}
+
+	conn, err := upgrade.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		errs := response.ClientResponse(http.StatusBadRequest, "Websocket Connection Issue", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
+	defer func() {
+		ch.helper.RemoveUserFromGroups(userID, conn)
+		conn.Close()
+	}()
+
+	groupID := c.Param("groupID")
+	if groupID == "" {
+		errs := response.ClientResponse(http.StatusBadRequest, "Group ID is required", nil, "")
+		c.JSON(http.StatusBadRequest, errs)
+		return
+	}
+
+	ch.helper.AddUserToGroup(groupID, conn)
+
+	for {
+		_, msg, err := conn.ReadMessage()
+		if err != nil {
+			errs := response.ClientResponse(http.StatusBadRequest, "Details not in correct format", nil, err.Error())
+			c.JSON(http.StatusBadRequest, errs)
+			return
+		}
+		ch.helper.SendMessageToGroup(msg, userID, groupID)
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	//"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -182,3 +183,95 @@ func (u *UserHandler) ChangePassword(c *gin.Context) {
 	successRes := response.ClientResponse(http.StatusOK, "password changed Successfully ", nil, nil)
 	c.JSON(http.StatusOK, successRes)
 }
+
+// func (u *UserHandler) FollowReq(c *gin.Context) {
+// 	id, exists := c.Get("id")
+// 	if !exists {
+// 		errorRes := response.ClientResponse(http.StatusUnauthorized, "User ID not found", nil, "User ID is required")
+// 		c.JSON(http.StatusUnauthorized, errorRes)
+// 		return
+// 	}
+
+// 	useridStr := c.Param("userid")
+// 	userid, err := strconv.Atoi(useridStr)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid user ID", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
+
+// 	err = u.GRPC_Client.SendFollowReq(id.(int), userid)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusInternalServerError, "Error in follow request", nil, err.Error())
+// 		c.JSON(http.StatusInternalServerError, errorRes)
+// 		return
+// 	}
+
+// 	successRes := response.ClientResponse(http.StatusOK, "Successfully followed user", nil, nil)
+// 	c.JSON(http.StatusOK, successRes)
+// }
+
+// func (uh *UserHandler) AcceptFollowreq(c *gin.Context) {
+// 	id, exists := c.Get("id")
+// 	if !exists {
+// 		errorRes := response.ClientResponse(http.StatusUnauthorized, "User ID not found", nil, "User ID is required")
+// 		c.JSON(http.StatusUnauthorized, errorRes)
+// 		return
+// 	}
+
+// 	useridStr := c.Param("userid")
+// 	userid, err := strconv.Atoi(useridStr)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid user ID", nil, err.Error())
+// 		c.JSON(http.StatusBadRequest, errorRes)
+// 		return
+// 	}
+
+// 	err = uh.GRPC_Client.AcceptFollowRequest(id.(int), userid)
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusInternalServerError, "Error in accepting follow request", nil, err.Error())
+// 		c.JSON(http.StatusInternalServerError, errorRes)
+// 		return
+// 	}
+
+// 	successRes := response.ClientResponse(http.StatusOK, "Successfully accepted follow request", nil, nil)
+// 	c.JSON(http.StatusOK, successRes)
+// }
+
+// func (uh *UserHandler) Followers(c *gin.Context) {
+// 	id, exists := c.Get("id")
+// 	if !exists {
+// 		errorRes := response.ClientResponse(http.StatusUnauthorized, "User ID not found", nil, "User ID is required")
+// 		c.JSON(http.StatusUnauthorized, errorRes)
+// 		return
+// 	}
+
+// 	followers, err := uh.GRPC_Client.GetFollowers(id.(int))
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusInternalServerError, "Error retrieving followers", nil, err.Error())
+// 		c.JSON(http.StatusInternalServerError, errorRes)
+// 		return
+// 	}
+
+// 	successRes := response.ClientResponse(http.StatusOK, "Successfully retrieved followers", followers, nil)
+// 	c.JSON(http.StatusOK, successRes)
+// }
+
+// func (uh *UserHandler) Followings(c *gin.Context) {
+// 	id, exists := c.Get("id")
+// 	if !exists {
+// 		errorRes := response.ClientResponse(http.StatusUnauthorized, "User ID not found", nil, "User ID is required")
+// 		c.JSON(http.StatusUnauthorized, errorRes)
+// 		return
+// 	}
+
+// 	followings, err := uh.GRPC_Client.GetFollowings(id.(int))
+// 	if err != nil {
+// 		errorRes := response.ClientResponse(http.StatusInternalServerError, "Error retrieving followings", nil, err.Error())
+// 		c.JSON(http.StatusInternalServerError, errorRes)
+// 		return
+// 	}
+
+// 	successRes := response.ClientResponse(http.StatusOK, "Successfully retrieved followings", followings, nil)
+// 	c.JSON(http.StatusOK, successRes)
+// }

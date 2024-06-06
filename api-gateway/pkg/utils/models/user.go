@@ -80,7 +80,11 @@ type OtpVerification struct {
 	Otp   string `json:"otp" validate:"required,len=4,number"`
 }
 type ChangePassword struct {
-    Oldpassword string `json:"old_password"`
-    Password    string `json:"password"`
-    Repassword  string `json:"resetted_password"`
+	Oldpassword string `json:"old_password"`
+	Password    string `json:"password"`
+	Repassword  string `json:"resetted_password"`
+}
+type Followersresponse struct {
+	Firstname string `json:"firstname"`
+	Profile   string `json:"profile"`
 }

@@ -5,8 +5,8 @@ import (
 	"ExploriteGateway/pkg/utils/models"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/IBM/sarama"
 	"github.com/golang-jwt/jwt"
@@ -15,75 +15,59 @@ import (
 
 type Helper struct {
 	config *config.Config
+	Groups map[string][]*websocket.Conn
 }
 
 func NewHelper(config *config.Config) *Helper {
 	return &Helper{
 		config: config,
+		Groups: make(map[string][]*websocket.Conn),
 	}
 }
 
-func (r *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
+func (h *Helper) SendMessageToUser(User map[string]*websocket.Conn, msg []byte, userID string) {
 	var message models.Message
-	if err := json.Unmarshal([]byte(msg), &message); err != nil {
-		fmt.Println("error while unmarshel ", err)
+	if err := json.Unmarshal(msg, &message); err != nil {
+		log.Println("Error while unmarshaling:", err)
+		return
 	}
 
 	message.SenderID = userID
 	recipientConn, ok := User[message.RecipientID]
-	fmt.Println("recipient id", message.RecipientID)
+	log.Println("Recipient ID:", message.RecipientID)
 	if ok {
-		fmt.Println("yyyyyyyyyyyyyyyyyyyy")
-		recipientConn.WriteMessage(websocket.TextMessage, msg)
+		if err := recipientConn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			log.Println("Error sending message to recipient:", err)
+		}
 	}
-	err := KafkaProducer(message)
-	fmt.Println("==sending succesful==", err)
+	if err := KafkaProducer(message); err != nil {
+		log.Println("Error sending message to Kafka:", err)
+	}
+	log.Println("Message sent successfully to user")
 }
 
-// func KafkaProducer(message models.Message) error {
-// 	fmt.Println("from kafka ", message)
-// 	cfg, _ := config.LoadConfig()
-// 	configs := sarama.NewConfig()
-// 	configs.Producer.Return.Successes = true
-// 	configs.Producer.Retry.Max = 5
-
-// 	producer, err := sarama.NewSyncProducer([]string{cfg.KafkaPort}, configs)
-// 	if err != nil {
-// 		fmt.Println("errrorr1 sarama", err)
-// 		return err
-// 	}
-// 	fmt.Println("producer sarama", producer)
-// 	result, err := json.Marshal(message)
-// 	if err != nil {
-// 		return err
-// 	}
-
-// 	msg := &sarama.ProducerMessage{Topic: cfg.KafkaTopic, Key: sarama.StringEncoder("Friend message"), Value: sarama.StringEncoder(result)}
-
-//		partition, offset, err := producer.SendMessage(msg)
-//		if err != nil {
-//			fmt.Println("err send message in kafka ", err)
-//		}
-//		log.Printf("[producer] partition id: %d; offset:%d, value: %v\n", partition, offset, msg)
-//		return nil
-//	}
 func KafkaProducer(message models.Message) error {
-	fmt.Println("from kafka ", message)
+	log.Println("Sending message to Kafka:", message)
 
-	cfg, _ := config.LoadConfig()
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Println("Error loading config:", err)
+		return err
+	}
 	configs := sarama.NewConfig()
 	configs.Producer.Return.Successes = true
 	configs.Producer.Retry.Max = 5
 
 	producer, err := sarama.NewSyncProducer([]string{cfg.KafkaPort}, configs)
 	if err != nil {
-		fmt.Println("error creating producer:", err)
+		log.Println("Error creating Kafka producer:", err)
 		return err
 	}
-	fmt.Println("producer created successfully:", producer)
+	log.Println("Kafka producer created successfully")
 
 	result, err := json.Marshal(message)
 	if err != nil {
+		log.Println("Error marshaling message:", err)
 		return err
 	}
 
@@ -95,32 +79,67 @@ func KafkaProducer(message models.Message) error {
 
 	partition, offset, err := producer.SendMessage(msg)
 	if err != nil {
-		fmt.Println("error sending message:", err)
+		log.Println("Error sending message to Kafka:", err)
 		return err
 	}
 
-	log.Printf("[producer] partition id: %d; offset:%d, value: %v\n", partition, offset, msg)
-	fmt.Println("==sending successful==")
+	log.Printf("[producer] Partition ID: %d; Offset: %d; Value: %v\n", partition, offset, msg)
+	log.Println("Message sent successfully to Kafka")
 	return nil
 }
 
 func (h *Helper) ValidateToken(tokenString string) (int, error) {
-
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte("123456789"), nil
 	})
 	if err != nil {
+		log.Println("Error parsing token:", err)
 		return 0, err
 	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		userID, ok := claims["id"].(float64)
-		intUserID := int(userID)
-
 		if !ok {
+			log.Println("User ID not found in token")
 			return 0, errors.New("user_id not found in token")
 		}
-		return intUserID, nil
-	} else {
-		return 0, errors.New("invalid token")
+		return int(userID), nil
 	}
+	log.Println("Invalid token")
+	return 0, errors.New("invalid token")
+}
+
+func (h *Helper) AddUserToGroup(groupID string, conn *websocket.Conn) {
+	h.Groups[groupID] = append(h.Groups[groupID], conn)
+	log.Println("User added to group:", groupID)
+}
+
+func (h *Helper) RemoveUserFromGroups(userID int, conn *websocket.Conn) {
+	for groupID, conns := range h.Groups {
+		for i, c := range conns {
+			if c == conn {
+				h.Groups[groupID] = append(h.Groups[groupID][:i], h.Groups[groupID][i+1:]...)
+				log.Println("User removed from group:", groupID)
+				break
+			}
+		}
+	}
+}
+
+func (h *Helper) SendMessageToGroup(msg []byte, userID int, groupID string) {
+	var message models.Message
+	if err := json.Unmarshal(msg, &message); err != nil {
+		log.Println("Error while unmarshaling:", err)
+		return
+	}
+
+	message.SenderID = strconv.Itoa(userID)
+	for _, conn := range h.Groups[groupID] {
+		if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
+			log.Println("Error sending message to group member:", err)
+		}
+	}
+	if err := KafkaProducer(message); err != nil {
+		log.Println("Error sending message to Kafka:", err)
+	}
+	log.Println("Message sent successfully to group:", groupID)
 }

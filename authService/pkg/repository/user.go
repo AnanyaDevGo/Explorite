@@ -35,18 +35,18 @@ func (ur *userRepository) UserSignUp(userDetails models.UserSignup) (models.User
 	fmt.Println("inside", model.Email)
 	return model, nil
 }
-
-func (ur *userRepository) CheckUserExistsByEmail(email string) (*domain.User, error) {
-	var user domain.User
-	res := ur.DB.Where(&domain.User{Email: email}).First(&user)
-	if res.Error != nil {
-		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return &domain.User{}, res.Error
-	}
-	return &user, nil
+func (r *userRepository) CheckUserExistsByEmail(email string) (*domain.User, error) {
+    var user domain.User
+    result := r.DB.Where("email = ?", email).First(&user)
+    if result.Error != nil {
+        if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+            return nil, nil
+        }
+        return nil, result.Error
+    }
+    return &user, nil
 }
+
 
 func (ur *userRepository) FindUserByEmail(user models.UserLogin) (models.UserSignup, error) {
 	var userDetail models.UserSignup

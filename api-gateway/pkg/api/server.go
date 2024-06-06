@@ -45,6 +45,7 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	chat := router.Group("/user/chat")
 	{
 		chat.GET("", chatHandler.FriendMessage)
+		chat.GET("", chatHandler.FriendMessage)
 		chat.GET("/message", chatHandler.GetChat)
 	}
 

@@ -40,3 +40,10 @@ type Pagination struct {
 	Limit  string
 	OffSet string
 }
+
+// type GroupMessage struct {
+// 	SenderID  string    `json:"SenderID" validate:"required"`
+// 	GroupID   string    `json:"GroupID" validate:"required"`
+// 	Content   string    `json:"Content" validate:"required"`
+// 	Timestamp time.Time `json:"TimeStamp" validate:"required"`
+// }

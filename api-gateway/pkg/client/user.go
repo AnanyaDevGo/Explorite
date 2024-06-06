@@ -162,15 +162,26 @@ func (uc *userClient) EditProfile(id int, profile models.EditProfile) error {
 	return nil
 }
 func (uc *userClient) ChangePassword(userID int, oldPassword, newPassword, rePassword string) error {
-   
-    _, err := uc.Client.ChangePassword(context.Background(), &pb.ChangePasswordRequest{
-        UserId:      int32(userID),
-        OldPassword: oldPassword,
-        NewPassword: newPassword,
-        RePassword:  rePassword,
-    })
-    if err != nil {
-        return err
-    }
-    return nil
+
+	_, err := uc.Client.ChangePassword(context.Background(), &pb.ChangePasswordRequest{
+		UserId:      int32(userID),
+		OldPassword: oldPassword,
+		NewPassword: newPassword,
+		RePassword:  rePassword,
+	})
+	if err != nil {
+		return err
+	}
+	return nil
 }
+
+// func (uc *userClient) SendFollowReq(Id,userID int) error{
+// 	_, err := uc.Client.SendFollowReq(context.Background(), &pb.SendFollowReqRequest{
+// 		Id: int32(Id),
+// 		UserId:  int32(userID),
+// 		})
+// 		if err != nil {
+// 			return err
+// 		}
+// 		return nil
+// }

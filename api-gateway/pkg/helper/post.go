@@ -3,6 +3,7 @@ package helper
 import (
 	cfg "ExploriteGateway/pkg/config"
 	"fmt"
+	"log"
 	"mime/multipart"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -16,15 +17,18 @@ type helper struct {
 }
 
 func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
-
+	log.Println("Opening file for upload...")
 	f, openErr := file.Open()
-
 	if openErr != nil {
+		log.Println("Error opening file:", openErr)
 		return "", openErr
 	}
+	defer func() {
+		log.Println("Closing file after upload.")
+		f.Close()
+	}()
 
-	defer f.Close()
-
+	log.Println("Creating new AWS session...")
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(h.cfg.AWSRegion),
 		Credentials: credentials.NewStaticCredentials(
@@ -34,8 +38,11 @@ func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
 		),
 	})
 	if err != nil {
+		log.Println("Error creating AWS session:", err)
 		return "", err
 	}
+
+	log.Println("Uploading file to S3...")
 	uploader := s3manager.NewUploader(sess)
 	bucketName := "crocsclub"
 
@@ -44,10 +51,12 @@ func (h *helper) AddImageToAwsS3(file *multipart.FileHeader) (string, error) {
 		Key:    aws.String(file.Filename),
 		Body:   f,
 	})
-
 	if err != nil {
+		log.Println("Error uploading file to S3:", err)
 		return "", err
 	}
+
 	url := fmt.Sprintf("https://%s.s3.amazonaws.com/%s", bucketName, file.Filename)
+	log.Println("File uploaded successfully. URL:", url)
 	return url, nil
 }

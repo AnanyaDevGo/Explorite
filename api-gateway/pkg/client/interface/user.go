@@ -12,4 +12,10 @@ type UserClient interface {
 	EditProfile(id int, profile models.EditProfile) error
 	ChangePassword(userID int, oldPassword, newPassword, rePassword string) error
 	
+	//SendFollowReq(Id,userID int) error
+	// AcceptFollowreq(id int,userid int)error
+	// Unfollow(id int,userid int)error
+	// Followers(id int)([]models.Followersresponse,error)
+	// Followings(id int)([]models.Followersresponse,error)
+	
 }
