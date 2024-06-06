@@ -12,9 +12,15 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler, postHandler *handler.PostHandler, chatHandler *handler.ChatHandler) *ServerHTTP {
+func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler, postHandler *handler.PostHandler, chatHandler *handler.ChatHandler, videocallHandler *handler.VideoCallHandler) *ServerHTTP {
 	router := gin.New()
 	router.Use(gin.Logger())
+	router.Static("/static", "./static")
+	router.LoadHTMLGlob("template/*")
+
+	router.GET("/exit", videocallHandler.ExitPage)
+	router.GET("/error", videocallHandler.ErrorPage)
+	router.GET("/index", videocallHandler.IndexedPage)
 
 	router.POST("/admin/login", adminHandler.LoginHandler)
 	router.POST("/admin/signup", adminHandler.AdminSignUp)
@@ -45,7 +51,6 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	chat := router.Group("/user/chat")
 	{
 		chat.GET("", chatHandler.FriendMessage)
-		chat.GET("", chatHandler.FriendMessage)
 		chat.GET("/message", chatHandler.GetChat)
 	}
 
@@ -56,7 +61,6 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 		usermanagement.GET("/list", adminHandler.GetUsers)
 		usermanagement.PATCH("/block", adminHandler.BlockUser)
 		usermanagement.PATCH("/unblock", adminHandler.UnBlockUser)
-
 	}
 
 	return &ServerHTTP{engine: router}
