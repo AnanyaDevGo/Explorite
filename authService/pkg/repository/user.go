@@ -47,15 +47,15 @@ func (r *userRepository) CheckUserExistsByEmail(email string) (*domain.User, err
     return &user, nil
 }
 
-
 func (ur *userRepository) FindUserByEmail(user models.UserLogin) (models.UserSignup, error) {
-	var userDetail models.UserSignup
-	err := ur.DB.Raw("SELECT * FROM users WHERE email=? ", user.Email).Scan(&userDetail).Error
-	if err != nil {
-		return models.UserSignup{}, errors.New("error checking user details")
-	}
-	return userDetail, nil
+    var userDetail models.UserSignup
+    err := ur.DB.Raw("SELECT * FROM users WHERE email=$1", user.Email).Scan(&userDetail).Error
+    if err != nil {
+        return models.UserSignup{}, errors.New("error checking user details")
+    }
+    return userDetail, nil
 }
+
 func (ur *userRepository) GetUserName(email string) (string, error) {
 	var name string
 	err := ur.DB.Raw("select firstname from users where email = ?", email).Scan(&name).Error
