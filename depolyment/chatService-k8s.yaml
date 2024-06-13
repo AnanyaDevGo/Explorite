@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: chat-svc-container
-          image: ananyaep/explorite_chat_service
+          image: ananyaep/chat_svc
           ports:
           -  containerPort: 8003
           resources:
