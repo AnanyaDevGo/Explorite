@@ -78,6 +78,17 @@ func (ch *ChatHandler) FriendMessage(c *gin.Context) {
 	}
 }
 
+
+// @Summary			Get Users Chats
+// @Description		Retrieve UsersChats
+// @Tags			Chat
+// @Accept			json
+// @Produce		    json
+// @Security		Bearer
+// @Param			chatRequest  	body		models.ChatRequest	true	"GetChat details"
+// @Success		200		{object}	response.Response{}
+// @Failure		500		{object}	response.Response{}
+// @Router			/chat/message   [GET]
 func (ch *ChatHandler) GetChat(c *gin.Context) {
 	var chatRequest models.ChatRequest
 	if err := c.ShouldBindJSON(&chatRequest); err != nil {

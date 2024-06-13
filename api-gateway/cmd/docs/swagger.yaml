@@ -1,0 +1,329 @@
+definitions:
+  models.ChangePassword:
+    properties:
+      old_password:
+        type: string
+      password:
+        type: string
+      resetted_password:
+        type: string
+    type: object
+  models.EditProfile:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+      website:
+        type: string
+    type: object
+  models.OtpVerification:
+    properties:
+      email:
+        type: string
+      otp:
+        type: string
+    required:
+    - otp
+    type: object
+  models.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 20
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  models.UserOTPLogin:
+    properties:
+      email:
+        type: string
+    type: object
+  models.UserProfile:
+    properties:
+      bio:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      location:
+        type: string
+      name:
+        type: string
+      phone:
+        type: string
+      username:
+        type: string
+      website:
+        type: string
+    type: object
+  models.UserSignup:
+    properties:
+      bio:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      firstname:
+        type: string
+      gender:
+        type: string
+      lastname:
+        type: string
+      password:
+        maxLength: 20
+        minLength: 6
+        type: string
+      phone_number:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  response.Response:
+    properties:
+      data: {}
+      error: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+info:
+  contact:
+    name: API Support
+  description: Explorite is a social media platform
+  title: Go + Gin social media API Explorite
+  version: 1.0.0
+paths:
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user
+      parameters:
+      - description: User Login Details
+        in: body
+        name: userDetails
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User Login
+      tags:
+      - User
+  /user/otplogin:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate a user
+      parameters:
+      - description: User Login Details
+        in: body
+        name: userDetails
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserOTPLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User OTP Login
+      tags:
+      - User
+  /user/otpverify:
+    post:
+      consumes:
+      - application/json
+      description: Verify the OTP sent to the user's email
+      parameters:
+      - description: OTP Verification Details
+        in: body
+        name: otpVerification
+        required: true
+        schema:
+          $ref: '#/definitions/models.OtpVerification'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Verify OTP
+      tags:
+      - User
+  /user/profile/add:
+    post:
+      consumes:
+      - application/json
+      description: Add a new profile for the user
+      parameters:
+      - description: User Profile Details
+        in: body
+        name: profile
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserProfile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Add User Profile
+      tags:
+      - User
+  /user/profile/change-password:
+    patch:
+      consumes:
+      - application/json
+      description: Change the password of the user
+      parameters:
+      - description: Change Password Details
+        in: body
+        name: changePassword
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChangePassword'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Change User Password
+      tags:
+      - User
+  /user/profile/edit:
+    patch:
+      consumes:
+      - application/json
+      description: Edit the profile details of the user
+      parameters:
+      - description: Edit Profile Details
+        in: body
+        name: editProfile
+        required: true
+        schema:
+          $ref: '#/definitions/models.EditProfile'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Edit User Profile
+      tags:
+      - User
+  /user/profile/get:
+    get:
+      description: Get the profile of the user
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get User Profile
+      tags:
+      - User
+  /user/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user account
+      parameters:
+      - description: User Sign Up Details
+        in: body
+        name: userDetails
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserSignup'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: User Sign Up
+      tags:
+      - User
+securityDefinitions:
+  BearerTokenAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

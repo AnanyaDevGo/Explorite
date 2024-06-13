@@ -1,0 +1,124 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres
+    container_name: explorite-postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_USER=postgres
+    networks:
+      - explorite_network
+    volumes:
+      - explorite_volume:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+
+  mongodb:
+    image: mongo
+    container_name: explorite-mongodb
+    restart: on-failure
+    networks:
+      - explorite_network
+    volumes:
+      - explorite_volume:/data/db
+    ports:
+      - "27018:27017"
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest  
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000   
+    networks:
+      - explorite_network
+    container_name: zookeeper
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:9092,OUTSIDE://0.0.0.0:9094
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,OUTSIDE://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 168
+    networks:
+      - explorite_network
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9094:9094"
+      - "9092:9092"
+      
+  api-gateway:
+    image: explorite_api_gateway
+    build: ./GO-GRPC-API-GATEWAY/
+    restart: always
+    depends_on:
+      - postgres
+      - kafka
+    container_name: explorite-api-gateway
+    networks:
+      - explorite_network
+    ports:
+      - "8081:8080"
+
+  auth-services:
+    image: explorite_auth_service
+    build: ./GO-GRPC-AUTH-SVC/
+    restart: always
+    depends_on:
+      - postgres
+      - kafka
+    container_name: explorite-auth-service
+    networks:
+      - explorite_network
+    hostname: explorite-auth-service
+
+
+  chat-service:
+    image: explorite_chat_service
+    build: ./GO-GRPC-CHAT-SVC/
+    depends_on:
+      - mongodb
+      - kafka
+    restart: always
+    container_name: explorite-chat-service
+    networks:
+      - explorite_network
+    hostname: explorite-chat-service
+
+  notification-service:
+    image: explorite_notification_service
+    build: ./GO-GRPC-NOTIFICATION-SVC/
+    depends_on:
+      - postgres
+      - kafka
+    restart: always
+    container_name: explorite-notification-service
+    networks:
+      - explorite_network
+    hostname: explorite-notification-service
+
+  post-service:
+    image: explorite_post_service
+    build: ./GO-GRPC-POST-SVC/
+    depends_on:
+      - postgres
+      - kafka
+    restart: always
+    container_name: explorite-post-service
+    networks:
+      - explorite_network
+    hostname: explorite-post-service
+
+networks:
+  explorite_network:
+    driver: bridge
+
+volumes:
+  explorite_volume:
