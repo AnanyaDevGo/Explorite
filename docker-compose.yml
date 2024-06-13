@@ -56,7 +56,7 @@ services:
       
   api-gateway:
     image: explorite_api_gateway
-    build: ./GO-GRPC-API-GATEWAY/
+    build: ./api-gateway/
     restart: always
     depends_on:
       - postgres
@@ -69,7 +69,7 @@ services:
 
   auth-services:
     image: explorite_auth_service
-    build: ./GO-GRPC-AUTH-SVC/
+    build: ./authService/
     restart: always
     depends_on:
       - postgres
@@ -82,7 +82,7 @@ services:
 
   chat-service:
     image: explorite_chat_service
-    build: ./GO-GRPC-CHAT-SVC/
+    build: ./chatService/
     depends_on:
       - mongodb
       - kafka
@@ -94,7 +94,7 @@ services:
 
   post-service:
     image: explorite_post_service
-    build: ./GO-GRPC-POST-SVC/
+    build: ./postService/
     depends_on:
       - postgres
       - kafka
