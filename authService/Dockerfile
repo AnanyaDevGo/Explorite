@@ -6,8 +6,9 @@ RUN go mod download
 RUN go build -v -o /auth_svc/build/api ./cmd
 
 
-FROM gcr.io/distroless/static-debian11
+FROM  scratch
 COPY --from=build-stage /auth_svc/build/api /
 COPY --from=build-stage /auth_svc/.env /
+COPY --from=build-stage /auth_svc/Logging /Logging/
 EXPOSE 50052
 CMD ["/api"]
