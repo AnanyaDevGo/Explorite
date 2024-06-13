@@ -35,7 +35,7 @@ metadata:
   name: api-gateway
   namespace: explorite
 spec:
-  type: LoadBalancer
+  type: NodePort
   ports:
     - targetPort: 8000
       port: 8000
