@@ -6,7 +6,7 @@ RUN go mod download
 RUN go build -v -o /explorite/build/api ./cmd
 
 
-FROM gcr.io/distroless/static-debian11
+FROM scratch
 COPY --from=build-stage /explorite/build/api /
 COPY --from=build-stage /explorite/template/ /template/
 COPY --from=build-stage /explorite/static /static/
