@@ -254,7 +254,7 @@ func (u *UserHandler) EditProfile(c *gin.Context) {
 	}
 	err := validator.New().Struct(model)
 	if err != nil {
-		err = errors.New("Missing constraints for email id")
+		err = errors.New("missing constraints for email id")
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Email id is not in correct format", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
