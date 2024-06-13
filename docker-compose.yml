@@ -92,18 +92,6 @@ services:
       - explorite_network
     hostname: explorite-chat-service
 
-  notification-service:
-    image: explorite_notification_service
-    build: ./GO-GRPC-NOTIFICATION-SVC/
-    depends_on:
-      - postgres
-      - kafka
-    restart: always
-    container_name: explorite-notification-service
-    networks:
-      - explorite_network
-    hostname: explorite-notification-service
-
   post-service:
     image: explorite_post_service
     build: ./GO-GRPC-POST-SVC/
