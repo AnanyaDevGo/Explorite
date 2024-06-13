@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: api-gateway-container
-          image: ananyaep/explorite_api_gateway
+          image: api-gateway
           ports:
             - containerPort: 8000
           resources:
