@@ -1,4 +1,4 @@
-FROM golang:1.21.2-alpine3.18 AS build-stage
+FROM golang:1.22.1-alpine3.18 AS build-stage
 WORKDIR /post_svc
 COPY ./ /post_svc
 RUN mkdir -p /post_svc/build

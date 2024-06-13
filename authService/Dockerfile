@@ -1,4 +1,4 @@
-FROM golang:1.21.2-alpine3.18 AS build-stage
+FROM golang:1.22.1-alpine3.18 AS build-stage
 WORKDIR /auth_svc
 COPY ./ /auth_svc
 RUN mkdir -p /auth_svc/build

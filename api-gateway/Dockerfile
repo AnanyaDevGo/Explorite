@@ -1,4 +1,4 @@
-FROM golang:1.21.2-alpine3.18 AS build-stage
+FROM golang:1.22.1-alpine3.18 AS build-stage
 WORKDIR /explorite
 COPY ./ /explorite
 RUN mkdir -p /explorite/build
