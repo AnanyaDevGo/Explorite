@@ -10,6 +10,7 @@ FROM scratch
 COPY --from=build-stage /explorite/build/api /
 COPY --from=build-stage /explorite/template/ /template/
 COPY --from=build-stage /explorite/static /static/
+COPY --from=build-stage /explorite/Logging /Logging/
 COPY --from=build-stage /explorite/.env /
 EXPOSE 8080
 CMD ["/api"]
