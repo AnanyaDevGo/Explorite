@@ -13,7 +13,7 @@ spec:
         app: auth_service
     spec:
       containers:
-        - image: ananyaep/auth_svc
+        - image: ananyaep90/auth_svc
           name: auth-svc-container
           ports:
             - containerPort: 8001
