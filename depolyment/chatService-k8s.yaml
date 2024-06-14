@@ -36,7 +36,7 @@ metadata:
 spec: 
   type: ClusterIP
   ports:
-    - port: 8003
-      targetPort: 8003
+    - port: 50054
+      targetPort: 50054
   selector:
     app: chat_service
