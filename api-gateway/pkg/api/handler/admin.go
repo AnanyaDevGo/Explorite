@@ -22,17 +22,6 @@ func NewAdminHandler(adminClient interfaces.AdminClient) *AdminHandler {
 	}
 }
 
-// AdminSignUp godoc
-// @Summary Admin Sign Up
-// @Description Create a new admin account
-// @Tags Admin
-// @Accept json
-// @Produce json
-// @Param adminDetails body models.AdminSignUp true "Admin Sign Up Details"
-// @Success 200 {object} response.Response
-// @Failure 400 {object} response.Response
-// @Failure 500 {object} response
-// @Router /admin/signup [post]
 func (ad *AdminHandler) AdminSignUp(c *gin.Context) {
 	logrusLogger, logrusLogFile := logging.InitLogrusLogger("./Logging/explorite_gateway.log")
 	defer logrusLogFile.Close()

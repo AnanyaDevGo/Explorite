@@ -1,4 +1,16 @@
 definitions:
+  models.AdminLogin:
+    properties:
+      email:
+        type: string
+      password:
+        maxLength: 20
+        minLength: 6
+        type: string
+    required:
+    - email
+    - password
+    type: object
   models.ChangePassword:
     properties:
       old_password:
@@ -7,6 +19,19 @@ definitions:
         type: string
       resetted_password:
         type: string
+    type: object
+  models.ChatRequest:
+    properties:
+      friendID:
+        type: string
+      limit:
+        type: string
+      offset:
+        type: string
+    required:
+    - friendID
+    - limit
+    - offset
     type: object
   models.EditProfile:
     properties:
@@ -45,11 +70,6 @@ definitions:
     required:
     - email
     - password
-    type: object
-  models.UserOTPLogin:
-    properties:
-      email:
-        type: string
     type: object
   models.UserProfile:
     properties:
@@ -110,6 +130,160 @@ info:
   title: Go + Gin social media API Explorite
   version: 1.0.0
 paths:
+  /admin/block:
+    post:
+      description: Block a user by ID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Block a User
+      tags:
+      - Admin
+  /admin/list:
+    get:
+      description: Retrieve a paginated list of users
+      parameters:
+      - description: Page number
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Get Users
+      tags:
+      - Admin
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate an admin account
+      parameters:
+      - description: Admin Login Details
+        in: body
+        name: adminDetails
+        required: true
+        schema:
+          $ref: '#/definitions/models.AdminLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Admin Login
+      tags:
+      - Admin
+  /admin/unblock:
+    post:
+      description: Unblock a user by ID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Unblock a User
+      tags:
+      - Admin
+  /chat/message:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve UsersChats
+      parameters:
+      - description: GetChat details
+        in: body
+        name: chatRequest
+        required: true
+        schema:
+          $ref: '#/definitions/models.ChatRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - Bearer: []
+      summary: Get Users Chats
+      tags:
+      - Chat
+  /post/upvote:
+    post:
+      description: Upvote a post by ID
+      parameters:
+      - description: Post ID
+        in: query
+        name: postid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Upvote a Post
+      tags:
+      - Post
   /user/login:
     post:
       consumes:
@@ -140,36 +314,6 @@ paths:
       summary: User Login
       tags:
       - User
-  /user/otplogin:
-    post:
-      consumes:
-      - application/json
-      description: Authenticate a user
-      parameters:
-      - description: User Login Details
-        in: body
-        name: userDetails
-        required: true
-        schema:
-          $ref: '#/definitions/models.UserOTPLogin'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/response.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/response.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/response.Response'
-      summary: User OTP Login
-      tags:
-      - User
   /user/otpverify:
     post:
       consumes:
@@ -196,6 +340,111 @@ paths:
       summary: Verify OTP
       tags:
       - User
+  /user/post/{postid}:
+    delete:
+      description: Delete a post by ID
+      parameters:
+      - description: Post ID
+        in: path
+        name: postid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Delete a post
+      tags:
+      - Post
+  /user/post/add:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Create a new post with caption and media
+      parameters:
+      - description: Post Caption
+        in: formData
+        name: caption
+        required: true
+        type: string
+      - description: Media URL
+        in: formData
+        name: mediaurl
+        required: true
+        type: string
+      - description: Post Image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Add a new post
+      tags:
+      - Post
+  /user/post/edit:
+    patch:
+      consumes:
+      - multipart/form-data
+      description: Edit the caption of an existing post
+      parameters:
+      - description: Post ID
+        in: formData
+        name: postid
+        required: true
+        type: string
+      - description: Post Caption
+        in: formData
+        name: caption
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Edit a post
+      tags:
+      - Post
+  /user/post/list:
+    get:
+      description: Get a list of all posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: List all posts
+      tags:
+      - Post
   /user/profile/add:
     post:
       consumes:
