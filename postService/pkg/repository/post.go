@@ -3,6 +3,7 @@ package repository
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"postservice/pkg/domain"
 	interfaces "postservice/pkg/repository/interface"
@@ -111,6 +112,54 @@ func (pr *postRepository) PostExists(postID int) (bool, error) {
 
 // 	return count > 0, nil
 // }
+
+func (pr *postRepository) CreateCommentPost(postId, userId int, comment string) (bool, error) {
+	querry := `insert into comments (post_id,comment,user_id,created_at)
+	values ($1,$2,$3,$4)`
+	err := pr.DB.Exec(querry, postId, comment, userId, time.Now()).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (pr *postRepository) IsCommentIdExist(commentId int) (bool, error) {
+	var ok int
+	querry := `select count(*) from comments where id = ?`
+	err := pr.DB.Raw(querry, commentId).Scan(&ok).Error
+	if err != nil {
+		return false, err
+	}
+	return ok > 0, nil
+}
+
+func (pr *postRepository) IsCommentIdBelongsUserId(commentId, userId int) (bool, error) {
+	var ok int
+	querry := `select count(*) from comments where id = ? and  user_id = ?`
+	err := pr.DB.Raw(querry, commentId, userId).Scan(&ok).Error
+	if err != nil {
+		return false, err
+	}
+	return ok > 0, nil
+}
+
+func (pr *postRepository) UpdateCommentPost(commentId, postId, userId int, comment string) (bool, error) {
+	querry := `update comments set comment = ?, updated_at = ? where id = ? and  user_id = ? and post_id = ? `
+	err := pr.DB.Exec(querry, comment, time.Now(), commentId, userId, postId).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func (pr *postRepository) DeleteCommentPost(postId, userId, commentId int) (bool, error) {
+	querry := `delete from comments where id = ? and  user_id = ? and post_id = ? `
+	err := pr.DB.Exec(querry, commentId, userId, postId).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
 
 func (pr *postRepository) UpvotePost(postID, userID int) error {
 	query := "insert into post_votes (user_id, post_id, vote)values(?,?,?)"

@@ -15,6 +15,11 @@ type PostRepository interface {
 	// CheckIfPostSaved(postID int) (bool, error)
 	// SavePost(postID int) error
 	// UnSavePost(postID int) error
+	CreateCommentPost(postId, userId int, comment string) (bool, error)
+	IsCommentIdExist(commentId int) (bool, error)
+	IsCommentIdBelongsUserId(commentId, userId int) (bool, error)
+	UpdateCommentPost(commentId, postId, userId int, comment string) (bool, error)
+	DeleteCommentPost(postId, userId, commentId int) (bool, error)
 	UpvotePost(postID, userID int) error
 	DownvotePost(postID, userID int) error
 	IsPostvoted(postID int, userID int) (bool, error)

@@ -238,6 +238,133 @@ func (ph *PostHandler) DeletePost(c *gin.Context) {
 //	    c.JSON(http.StatusOK, successRes)
 //	}
 
+
+// CreateCommentPost creates a comment on a post.
+// @Summary Create a comment on a post
+// @Description Create a comment on a post by providing post ID and comment content
+// @Tags Jobseeker
+// @Accept json
+// @Produce json
+// @Security BearerTokenAuth
+// @Param Authorization header string true "Bearer token"
+// @Param request body models.CreateCommentPost true "Comment request body"
+// @Success 200 {object} response.Response "Comment created successfully"
+// @Failure 400 {object} response.Response "Bad request: incorrect format"
+// @Failure 500 {object} response.Response "Internal server error: failed to create comment"
+// @Router /posts/comment [post]
+func (ph *PostHandler) CreateCommentPost(c *gin.Context) {
+	userIdany, ok := c.Get("id")
+	if !ok {
+		err := errors.New("failed to get user ID from context")
+		errResp := response.ClientResponse(http.StatusInternalServerError, "failed to get user ID from context", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errResp)
+		return
+	}
+	var comment models.CreateCommentPost
+	userId := userIdany.(int)
+	comment.UserId = userId
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		errResp := response.ClientResponse(http.StatusBadRequest, "Incorrect Format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errResp)
+		return
+	}
+
+	postOk, err := ph.GRPC_Client.CreateCommentPost(comment.PostId, comment.UserId, comment.Comment)
+	if err != nil {
+		errResp := response.ClientResponse(http.StatusInternalServerError, "error in creating comment", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errResp)
+		return
+	}
+	successRes := response.ClientResponse(http.StatusOK, "comment created successfully", postOk, nil)
+	c.JSON(http.StatusOK, successRes)
+
+}
+
+// UpdateCommentPost updates a comment on a post.
+// @Summary Update a comment on a post
+// @Description Update a comment on a post by providing comment ID, post ID, and updated comment content
+// @Tags Jobseeker
+// @Accept json
+// @Produce json
+// @Security BearerTokenAuth
+// @Param Authorization header string true "Bearer token"
+// @Param comment_id path int true "Comment ID"
+// @Param post_id path int true "Post ID"
+// @Param request body models.UpdateCommentPost true "Comment request body"
+// @Success 200 {object} response.Response "Comment updated successfully"
+// @Failure 400 {object} response.Response "Bad request: incorrect format"
+// @Failure 500 {object} response.Response "Internal server error: failed to update comment"
+// @Router /posts/comment/update [put]
+func (ph *PostHandler) UpdateCommentPost(c *gin.Context) {
+	userIdany, ok := c.Get("id")
+	if !ok {
+		err := errors.New("failed to get user ID from context")
+		errResp := response.ClientResponse(http.StatusInternalServerError, "failed to get user ID from context", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errResp)
+		return
+	}
+	var comment models.UpdateCommentPost
+	userId := userIdany.(int)
+	comment.UserId = userId
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		errResp := response.ClientResponse(http.StatusBadRequest, "Incorrect Format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errResp)
+		return
+	}
+
+	postOk, err := ph.GRPC_Client.UpdateCommentPost(comment.CommentId, comment.PostId, comment.UserId, comment.Comment)
+	if err != nil {
+		errResp := response.ClientResponse(http.StatusInternalServerError, "error in updating comment", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errResp)
+		return
+	}
+	successRes := response.ClientResponse(http.StatusOK,"comment updated successfully", postOk, nil)
+	c.JSON(http.StatusOK, successRes)
+
+}
+
+// DeleteCommentPost deletes a comment on a post.
+// @Summary Delete a comment on a post
+// @Description Delete a comment on a post by providing post ID and comment ID
+// @Tags Jobseeker
+// @Accept json
+// @Produce json
+// @Security BearerTokenAuth
+// @Param Authorization header string true "Bearer token"
+// @Param post_id path int true "Post ID"
+// @Param comment_id path int true "Comment ID"
+// @Success 200 {object} response.Response "Comment deleted successfully"
+// @Failure 400 {object} response.Response "Bad request: incorrect format"
+// @Failure 500 {object} response.Response "Internal server error: failed to delete comment"
+// @Router /posts/comment/delete [delete]
+func (ph *PostHandler) DeleteCommentPost(c *gin.Context) {
+	userIdany, ok := c.Get("id")
+	if !ok {
+		err := errors.New("failed to get user ID from context")
+		errResp := response.ClientResponse(http.StatusInternalServerError, "failed to get user ID from context", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errResp)
+		return
+	}
+	var comment models.DeleteCommentPost
+	userId := userIdany.(int)
+	comment.UserId = userId
+	if err := c.ShouldBindJSON(&comment); err != nil {
+		errResp := response.ClientResponse(http.StatusBadRequest, "Incorrect Format", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errResp)
+		return
+	}
+
+	postOk, err := ph.GRPC_Client.DeleteCommentPost(comment.PostId, comment.UserId, comment.CommentId)
+	if err != nil {
+		errResp := response.ClientResponse(http.StatusInternalServerError, "error in deleting comment", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errResp)
+		return
+	}
+	successRes := response.ClientResponse(http.StatusOK,"comment deleted successfully", postOk, nil)
+	c.JSON(http.StatusOK, successRes)
+
+}
+
 // UpvotePost godoc
 // @Summary Upvote a Post
 // @Description Upvote a post by ID
@@ -300,7 +427,6 @@ func (ph *PostHandler) UpvotePost(c *gin.Context) {
 // @Failure 400 {object} response.Response
 // @Failure 500 {object} response.Response
 // @Router /post/downvote [post]
-
 func (ph *PostHandler) DownvotePost(c *gin.Context) {
     logrusLogger, logrusLogFile := logging.InitLogrusLogger("./Logging/explorite_gateway.log")
     defer logrusLogFile.Close()

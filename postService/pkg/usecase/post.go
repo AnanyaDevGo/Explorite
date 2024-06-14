@@ -116,6 +116,93 @@ func (ps *PostUseCase) DeletePost(postID int) error {
 
 	return nil
 }
+func (ps *PostUseCase) CreateCommentPost(postId, userId int, comment string) (bool, error) {
+
+	if postId <= 0 {
+		return false, errors.New("postId is required")
+	}
+	if comment == "" {
+		return false, errors.New("comment is required")
+	}
+
+	okP, err := ps.postRepository.PostExists(postId)
+
+	if err != nil {
+		return false, err
+	}
+	if !okP {
+		return false, errors.New("post does not exist")
+	}
+	ok, err := ps.postRepository.CreateCommentPost(postId, userId, comment)
+	if err != nil {
+		return false, err
+	}
+	return ok, nil
+
+}
+
+func (ps *PostUseCase) UpdateCommentPost(commentId, postId, userId int, comment string) (bool, error) {
+	if postId <= 0 {
+		return false, errors.New("postId is required")
+	}
+	if comment == "" {
+		return false, errors.New("comment is required")
+	}
+	if commentId <= 0 {
+		return false, errors.New("commentId is required")
+	}
+
+	okc, err := ps.postRepository.IsCommentIdExist(commentId)
+	if err != nil {
+		return false, err
+	}
+	if !okc {
+		return false, errors.New("comment does not exist")
+	}
+
+	okcu, err := ps.postRepository.IsCommentIdBelongsUserId(commentId, userId)
+	if err != nil {
+		return false, err
+	}
+	if !okcu {
+		return false, errors.New("comment does not belongs to you")
+	}
+	ok, err := ps.postRepository.UpdateCommentPost(commentId, postId, userId, comment)
+	if err != nil {
+		return false, err
+	}
+	return ok, nil
+
+}
+
+func (ps *PostUseCase) DeleteCommentPost(postId, userId, commentId int) (bool, error) {
+	if postId <= 0 {
+		return false, errors.New("postId is required")
+	}
+	if commentId <= 0 {
+		return false, errors.New("commentId is required")
+	}
+	okc, err := ps.postRepository.IsCommentIdExist(commentId)
+	if err != nil {
+		return false, err
+	}
+	if !okc {
+		return false, errors.New("comment does not exist")
+	}
+
+	okcu, err := ps.postRepository.IsCommentIdBelongsUserId(commentId, userId)
+	if err != nil {
+		return false, err
+	}
+	if !okcu {
+		return false, errors.New("comment does not belongs to you")
+	}
+	ok, err := ps.postRepository.DeleteCommentPost(commentId, postId, userId)
+	if err != nil {
+		return false, err
+	}
+	return ok, nil
+}
 
 func (ps *PostUseCase) UpvotePost(userID, postID int) error {
 	if postID <= 0 {

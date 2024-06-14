@@ -116,6 +116,43 @@ func (pc *postClient) DeletePost(id int) error {
 //     }
 //     return nil
 // }
+
+func (pc *postClient) CreateCommentPost(postId, userId int, comment string) (bool, error) {
+	resp, err := pc.Client.CreateCommentPost(context.Background(), &pb.CreateCommentRequest{
+		PostId:  uint64(postId),
+		UserId:  uint64(userId),
+		Comment: comment,
+	})
+	if err != nil {
+		return false, err
+	}
+	return resp.Success, nil
+}
+
+func (pc *postClient) UpdateCommentPost(commentId, postId, userId int, comment string) (bool, error) {
+	resp, err := pc.Client.UpdateCommentPost(context.Background(), &pb.UpdateCommentRequest{
+		PostId:    uint64(postId),
+		UserId:    uint64(userId),
+		Comment:   comment,
+		CommentId: uint64(commentId),
+	})
+	if err != nil {
+		return false, err
+	}
+	return resp.Success, nil
+}
+
+func (pc *postClient) DeleteCommentPost(postId, userId, commentId int) (bool, error) {
+	resp, err := pc.Client.DeleteCommentPost(context.Background(), &pb.DeleteCommentRequest{
+		PostId:    uint64(postId),
+		UserId:    uint64(userId),
+		CommentId: uint64(commentId),
+	})
+	if err != nil {
+		return false, err
+	}
+	return resp.Success, nil
+}
 func (pc *postClient) UpvotePost(userID, postID int) error {
 	_, err := pc.Client.UpvotePost(context.Background(), &pb.UpvotePostRequest{
 		UserId: int32(userID),

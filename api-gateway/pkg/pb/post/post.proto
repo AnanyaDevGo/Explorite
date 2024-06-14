@@ -11,6 +11,9 @@ service Post {
     rpc DeletePost(DeletePostRequest) returns (DeletePostResponse);
     // rpc SavePost(SavePostRequest) returns (SavePostResponse);
     // rpc UnSavePost(UnSavePostRequest) returns (UnSavePostResponse);
+    rpc CreateCommentPost(CreateCommentRequest) returns (CreateCommentResponse);
+    rpc UpdateCommentPost(UpdateCommentRequest) returns (UpdateCommentResponse);
+    rpc DeleteCommentPost (DeleteCommentRequest) returns (DeleteCommentResponse);
     rpc UpvotePost(UpvotePostRequest) returns (UpvotePostResponse);
     rpc DownvotePost(DownvotePostRequest) returns (DownvotePostResponse);
 }
@@ -78,6 +81,36 @@ message DeletePostResponse {
 //     string error_message = 2;
 // }
 
+message CreateCommentRequest {
+    uint64 post_id = 1;
+    uint64 user_id = 2;
+    string comment = 3;
+  }
+  
+message CreateCommentResponse {
+    bool success = 1;
+  }
+  
+message UpdateCommentRequest {
+    uint64 comment_id = 1;
+    uint64 post_id = 2;
+    uint64 user_id = 3;
+    string comment = 4;
+  }
+  
+message UpdateCommentResponse {
+    bool success = 1;
+  }
+  
+message DeleteCommentRequest {
+    uint64 post_id = 1;
+    uint64 user_id = 2;
+    uint64 comment_id = 3;
+  }
+  
+message DeleteCommentResponse {
+    bool success = 1;
+  }
 message UpvotePostRequest {
     int32 user_id = 1;
     int32 post_id = 2;

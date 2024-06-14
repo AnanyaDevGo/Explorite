@@ -18,3 +18,21 @@ type EditPost struct {
 	UserId  string `validate:"required"`
 	PostId  string `json:"postid" validate:"required,number"`
 }
+
+type CreateCommentPost struct {
+	PostId  int    `json:"post_id"`
+	UserId  int    `json:"user_id"`
+	Comment string `json:"comment"`
+}
+type UpdateCommentPost struct {
+	CommentId int    `json:"comment_id"`
+	Comment   string `json:"comment"`
+	PostId    int    `json:"post_id"`
+	UserId    int    `json:"user_id"`
+}
+
+type DeleteCommentPost struct {
+	CommentId int `json:"comment_id"`
+	PostId    int `json:"post_id"`
+	UserId    int `json:"user_id"`
+}

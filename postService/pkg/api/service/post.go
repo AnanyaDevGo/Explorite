@@ -128,6 +128,45 @@ func (ps *PostServer) DeletePost(ctx context.Context, req *pb.DeletePostRequest)
 //     }, nil
 // }
 
+func (ps *PostServer) CreateCommentPost(ctx context.Context, req *pb.CreateCommentRequest) (*pb.CreateCommentResponse, error) {
+
+	postData, err := ps.postUsecase.CreateCommentPost(int(req.PostId), int(req.UserId), req.Comment)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.CreateCommentResponse{
+		Success: postData,
+	}, nil
+
+}
+
+func (ps *PostServer) UpdateCommentPost(ctx context.Context, req *pb.UpdateCommentRequest) (*pb.UpdateCommentResponse, error) {
+
+	postData, err := ps.postUsecase.UpdateCommentPost(int(req.CommentId), int(req.PostId), int(req.UserId), req.Comment)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.UpdateCommentResponse{
+		Success: postData,
+	}, nil
+
+}
+
+func (ps *PostServer) DeleteCommentPost(ctx context.Context, req *pb.DeleteCommentRequest) (*pb.DeleteCommentResponse, error) {
+
+	postData, err := ps.postUsecase.DeleteCommentPost(int(req.PostId), int(req.UserId), int(req.CommentId))
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DeleteCommentResponse{
+		Success: postData,
+	}, nil
+
+}
+
 func (ps *PostServer) UpvotePost(ctx context.Context, req *pb.UpvotePostRequest) (*pb.UpvotePostResponse, error) {
 	fmt.Println("hereeeee")
 	userID := req.UserId

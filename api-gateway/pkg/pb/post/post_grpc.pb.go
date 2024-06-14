@@ -19,12 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Post_AddPost_FullMethodName      = "/post.Post/AddPost"
-	Post_ListPost_FullMethodName     = "/post.Post/ListPost"
-	Post_EditPost_FullMethodName     = "/post.Post/EditPost"
-	Post_DeletePost_FullMethodName   = "/post.Post/DeletePost"
-	Post_UpvotePost_FullMethodName   = "/post.Post/UpvotePost"
-	Post_DownvotePost_FullMethodName = "/post.Post/DownvotePost"
+	Post_AddPost_FullMethodName           = "/post.Post/AddPost"
+	Post_ListPost_FullMethodName          = "/post.Post/ListPost"
+	Post_EditPost_FullMethodName          = "/post.Post/EditPost"
+	Post_DeletePost_FullMethodName        = "/post.Post/DeletePost"
+	Post_CreateCommentPost_FullMethodName = "/post.Post/CreateCommentPost"
+	Post_UpdateCommentPost_FullMethodName = "/post.Post/UpdateCommentPost"
+	Post_DeleteCommentPost_FullMethodName = "/post.Post/DeleteCommentPost"
+	Post_UpvotePost_FullMethodName        = "/post.Post/UpvotePost"
+	Post_DownvotePost_FullMethodName      = "/post.Post/DownvotePost"
 )
 
 // PostClient is the client API for Post service.
@@ -37,6 +40,9 @@ type PostClient interface {
 	DeletePost(ctx context.Context, in *DeletePostRequest, opts ...grpc.CallOption) (*DeletePostResponse, error)
 	// rpc SavePost(SavePostRequest) returns (SavePostResponse);
 	// rpc UnSavePost(UnSavePostRequest) returns (UnSavePostResponse);
+	CreateCommentPost(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error)
+	UpdateCommentPost(ctx context.Context, in *UpdateCommentRequest, opts ...grpc.CallOption) (*UpdateCommentResponse, error)
+	DeleteCommentPost(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error)
 	UpvotePost(ctx context.Context, in *UpvotePostRequest, opts ...grpc.CallOption) (*UpvotePostResponse, error)
 	DownvotePost(ctx context.Context, in *DownvotePostRequest, opts ...grpc.CallOption) (*DownvotePostResponse, error)
 }
@@ -85,6 +91,33 @@ func (c *postClient) DeletePost(ctx context.Context, in *DeletePostRequest, opts
 	return out, nil
 }
 
+func (c *postClient) CreateCommentPost(ctx context.Context, in *CreateCommentRequest, opts ...grpc.CallOption) (*CreateCommentResponse, error) {
+	out := new(CreateCommentResponse)
+	err := c.cc.Invoke(ctx, Post_CreateCommentPost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) UpdateCommentPost(ctx context.Context, in *UpdateCommentRequest, opts ...grpc.CallOption) (*UpdateCommentResponse, error) {
+	out := new(UpdateCommentResponse)
+	err := c.cc.Invoke(ctx, Post_UpdateCommentPost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *postClient) DeleteCommentPost(ctx context.Context, in *DeleteCommentRequest, opts ...grpc.CallOption) (*DeleteCommentResponse, error) {
+	out := new(DeleteCommentResponse)
+	err := c.cc.Invoke(ctx, Post_DeleteCommentPost_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *postClient) UpvotePost(ctx context.Context, in *UpvotePostRequest, opts ...grpc.CallOption) (*UpvotePostResponse, error) {
 	out := new(UpvotePostResponse)
 	err := c.cc.Invoke(ctx, Post_UpvotePost_FullMethodName, in, out, opts...)
@@ -113,6 +146,9 @@ type PostServer interface {
 	DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error)
 	// rpc SavePost(SavePostRequest) returns (SavePostResponse);
 	// rpc UnSavePost(UnSavePostRequest) returns (UnSavePostResponse);
+	CreateCommentPost(context.Context, *CreateCommentRequest) (*CreateCommentResponse, error)
+	UpdateCommentPost(context.Context, *UpdateCommentRequest) (*UpdateCommentResponse, error)
+	DeleteCommentPost(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error)
 	UpvotePost(context.Context, *UpvotePostRequest) (*UpvotePostResponse, error)
 	DownvotePost(context.Context, *DownvotePostRequest) (*DownvotePostResponse, error)
 	mustEmbedUnimplementedPostServer()
@@ -133,6 +169,15 @@ func (UnimplementedPostServer) EditPost(context.Context, *EditPostRequest) (*Edi
 }
 func (UnimplementedPostServer) DeletePost(context.Context, *DeletePostRequest) (*DeletePostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeletePost not implemented")
+}
+func (UnimplementedPostServer) CreateCommentPost(context.Context, *CreateCommentRequest) (*CreateCommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCommentPost not implemented")
+}
+func (UnimplementedPostServer) UpdateCommentPost(context.Context, *UpdateCommentRequest) (*UpdateCommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCommentPost not implemented")
+}
+func (UnimplementedPostServer) DeleteCommentPost(context.Context, *DeleteCommentRequest) (*DeleteCommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteCommentPost not implemented")
 }
 func (UnimplementedPostServer) UpvotePost(context.Context, *UpvotePostRequest) (*UpvotePostResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpvotePost not implemented")
@@ -225,6 +270,60 @@ func _Post_DeletePost_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Post_CreateCommentPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).CreateCommentPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_CreateCommentPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).CreateCommentPost(ctx, req.(*CreateCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_UpdateCommentPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).UpdateCommentPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_UpdateCommentPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).UpdateCommentPost(ctx, req.(*UpdateCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Post_DeleteCommentPost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PostServer).DeleteCommentPost(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Post_DeleteCommentPost_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PostServer).DeleteCommentPost(ctx, req.(*DeleteCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Post_UpvotePost_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpvotePostRequest)
 	if err := dec(in); err != nil {
@@ -283,6 +382,18 @@ var Post_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeletePost",
 			Handler:    _Post_DeletePost_Handler,
+		},
+		{
+			MethodName: "CreateCommentPost",
+			Handler:    _Post_CreateCommentPost_Handler,
+		},
+		{
+			MethodName: "UpdateCommentPost",
+			Handler:    _Post_UpdateCommentPost_Handler,
+		},
+		{
+			MethodName: "DeleteCommentPost",
+			Handler:    _Post_DeleteCommentPost_Handler,
 		},
 		{
 			MethodName: "UpvotePost",
