@@ -166,21 +166,30 @@ func (ph *PostHandler) EditPost(c *gin.Context) {
 // @Param postid path string true "Post ID"
 // @Success 200 {object} response.Response
 // @Failure 400 {object} response.Response
-// @Router /user/post/{postid} [delete]
+// @Router /user/post [delete]
 func (ph *PostHandler) DeletePost(c *gin.Context) {
 	logrusLogger, logrusLogFile := logging.InitLogrusLogger("./Logging/explorite_gateway.log")
 	defer logrusLogFile.Close()
 
-	postID := c.Param("postid")
-	if postID == "" {
-		err := errors.New("post ID is empty")
+	postID, exists := c.Get("postid")
+	if !exists {
+		err := errors.New("post ID is not present")
 		logrusLogger.Error(err)
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
 	}
 
-	postIDInt, err := strconv.Atoi(postID)
+	postIDStr, ok := postID.(string)
+	if !ok || postIDStr == "" {
+		err := errors.New("post ID is empty or not a string")
+		logrusLogger.Error(err)
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
+
+	postIDInt, err := strconv.Atoi(postIDStr)
 	if err != nil {
 		logrusLogger.Error("Invalid post ID", err)
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
@@ -238,11 +247,10 @@ func (ph *PostHandler) DeletePost(c *gin.Context) {
 //	    c.JSON(http.StatusOK, successRes)
 //	}
 
-
 // CreateCommentPost creates a comment on a post.
 // @Summary Create a comment on a post
 // @Description Create a comment on a post by providing post ID and comment content
-// @Tags Jobseeker
+// @Tags Post
 // @Accept json
 // @Produce json
 // @Security BearerTokenAuth
@@ -283,7 +291,7 @@ func (ph *PostHandler) CreateCommentPost(c *gin.Context) {
 // UpdateCommentPost updates a comment on a post.
 // @Summary Update a comment on a post
 // @Description Update a comment on a post by providing comment ID, post ID, and updated comment content
-// @Tags Jobseeker
+// @Tags Post
 // @Accept json
 // @Produce json
 // @Security BearerTokenAuth
@@ -318,7 +326,7 @@ func (ph *PostHandler) UpdateCommentPost(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, errResp)
 		return
 	}
-	successRes := response.ClientResponse(http.StatusOK,"comment updated successfully", postOk, nil)
+	successRes := response.ClientResponse(http.StatusOK, "comment updated successfully", postOk, nil)
 	c.JSON(http.StatusOK, successRes)
 
 }
@@ -326,7 +334,7 @@ func (ph *PostHandler) UpdateCommentPost(c *gin.Context) {
 // DeleteCommentPost deletes a comment on a post.
 // @Summary Delete a comment on a post
 // @Description Delete a comment on a post by providing post ID and comment ID
-// @Tags Jobseeker
+// @Tags Post
 // @Accept json
 // @Produce json
 // @Security BearerTokenAuth
@@ -360,7 +368,7 @@ func (ph *PostHandler) DeleteCommentPost(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, errResp)
 		return
 	}
-	successRes := response.ClientResponse(http.StatusOK,"comment deleted successfully", postOk, nil)
+	successRes := response.ClientResponse(http.StatusOK, "comment deleted successfully", postOk, nil)
 	c.JSON(http.StatusOK, successRes)
 
 }
@@ -428,43 +436,43 @@ func (ph *PostHandler) UpvotePost(c *gin.Context) {
 // @Failure 500 {object} response.Response
 // @Router /post/downvote [post]
 func (ph *PostHandler) DownvotePost(c *gin.Context) {
-    logrusLogger, logrusLogFile := logging.InitLogrusLogger("./Logging/explorite_gateway.log")
-    defer logrusLogFile.Close()
+	logrusLogger, logrusLogFile := logging.InitLogrusLogger("./Logging/explorite_gateway.log")
+	defer logrusLogFile.Close()
 
-    userIDInterface, exists := c.Get("id")
-    if !exists {
-        err := errors.New("failed to get user ID from context")
-        logrusLogger.Error(err)
-        errorRes := response.ClientResponse(http.StatusInternalServerError, "Failed to get user ID from context", nil, err.Error())
-        c.JSON(http.StatusInternalServerError, errorRes)
-        return
-    }
-    userID, ok := userIDInterface.(int)
-    if !ok {
-        err := errors.New("failed to convert userID to int")
-        logrusLogger.Error(err)
-        errorRes := response.ClientResponse(http.StatusInternalServerError, "Failed to convert userID to int", nil, err.Error())
-        c.JSON(http.StatusInternalServerError, errorRes)
-        return
-    }
+	userIDInterface, exists := c.Get("id")
+	if !exists {
+		err := errors.New("failed to get user ID from context")
+		logrusLogger.Error(err)
+		errorRes := response.ClientResponse(http.StatusInternalServerError, "Failed to get user ID from context", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errorRes)
+		return
+	}
+	userID, ok := userIDInterface.(int)
+	if !ok {
+		err := errors.New("failed to convert userID to int")
+		logrusLogger.Error(err)
+		errorRes := response.ClientResponse(http.StatusInternalServerError, "Failed to convert userID to int", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errorRes)
+		return
+	}
 
-    postID := c.Query("postid")
-    postIDInt, err := strconv.Atoi(postID)
-    if err != nil {
-        logrusLogger.Error("Invalid post ID", err)
-        errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
-        c.JSON(http.StatusBadRequest, errorRes)
-        return
-    }
+	postID := c.Query("postid")
+	postIDInt, err := strconv.Atoi(postID)
+	if err != nil {
+		logrusLogger.Error("Invalid post ID", err)
+		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
+		c.JSON(http.StatusBadRequest, errorRes)
+		return
+	}
 
-    if err := ph.GRPC_Client.DownvotePost(userID, postIDInt); err != nil {
-        logrusLogger.Error("Failed to downvote post", err)
-        errorRes := response.ClientResponse(http.StatusInternalServerError, "Failed to downvote post", nil, err.Error())
-        c.JSON(http.StatusInternalServerError, errorRes)
-        return
-    }
+	if err := ph.GRPC_Client.DownvotePost(userID, postIDInt); err != nil {
+		logrusLogger.Error("Failed to downvote post", err)
+		errorRes := response.ClientResponse(http.StatusInternalServerError, "Failed to downvote post", nil, err.Error())
+		c.JSON(http.StatusInternalServerError, errorRes)
+		return
+	}
 
-    logrusLogger.Info("Post downvoted successfully")
-    successRes := response.ClientResponse(http.StatusOK, "Post downvoted successfully", nil, nil)
-    c.JSON(http.StatusOK, successRes)
+	logrusLogger.Info("Post downvoted successfully")
+	successRes := response.ClientResponse(http.StatusOK, "Post downvoted successfully", nil, nil)
+	c.JSON(http.StatusOK, successRes)
 }

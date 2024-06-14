@@ -33,6 +33,15 @@ definitions:
     - limit
     - offset
     type: object
+  models.CreateCommentPost:
+    properties:
+      comment:
+        type: string
+      post_id:
+        type: integer
+      user_id:
+        type: integer
+    type: object
   models.EditProfile:
     properties:
       bio:
@@ -58,6 +67,17 @@ definitions:
         type: string
     required:
     - otp
+    type: object
+  models.UpdateCommentPost:
+    properties:
+      comment:
+        type: string
+      comment_id:
+        type: integer
+      post_id:
+        type: integer
+      user_id:
+        type: integer
     type: object
   models.UserLogin:
     properties:
@@ -257,6 +277,33 @@ paths:
       summary: Get Users Chats
       tags:
       - Chat
+  /post/downvote:
+    post:
+      description: Downvote a post by ID
+      parameters:
+      - description: Post ID
+        in: query
+        name: postid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/response.Response'
+      summary: Downvote a Post
+      tags:
+      - Post
   /post/upvote:
     post:
       description: Upvote a post by ID
@@ -282,6 +329,132 @@ paths:
           schema:
             $ref: '#/definitions/response.Response'
       summary: Upvote a Post
+      tags:
+      - Post
+  /posts/comment:
+    post:
+      consumes:
+      - application/json
+      description: Create a comment on a post by providing post ID and comment content
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Comment request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateCommentPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment created successfully
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 'Bad request: incorrect format'
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 'Internal server error: failed to create comment'
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Create a comment on a post
+      tags:
+      - Post
+  /posts/comment/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a comment on a post by providing post ID and comment ID
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment deleted successfully
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 'Bad request: incorrect format'
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 'Internal server error: failed to delete comment'
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Delete a comment on a post
+      tags:
+      - Post
+  /posts/comment/update:
+    put:
+      consumes:
+      - application/json
+      description: Update a comment on a post by providing comment ID, post ID, and
+        updated comment content
+      parameters:
+      - description: Bearer token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Comment ID
+        in: path
+        name: comment_id
+        required: true
+        type: integer
+      - description: Post ID
+        in: path
+        name: post_id
+        required: true
+        type: integer
+      - description: Comment request body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateCommentPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment updated successfully
+          schema:
+            $ref: '#/definitions/response.Response'
+        "400":
+          description: 'Bad request: incorrect format'
+          schema:
+            $ref: '#/definitions/response.Response'
+        "500":
+          description: 'Internal server error: failed to update comment'
+          schema:
+            $ref: '#/definitions/response.Response'
+      security:
+      - BearerTokenAuth: []
+      summary: Update a comment on a post
       tags:
       - Post
   /user/login:

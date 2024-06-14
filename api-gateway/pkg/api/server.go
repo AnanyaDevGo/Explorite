@@ -49,7 +49,7 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 		post.POST("/add", postHandler.AddPost)
 		post.GET("/list", postHandler.ListPost)
 		post.PATCH("/edit", postHandler.EditPost)
-		post.DELETE("/delete/:postid", postHandler.DeletePost)
+		post.DELETE("/delete", postHandler.DeletePost)
 		post.PATCH("/upvote", postHandler.UpvotePost)
 		post.PATCH("/downvote", postHandler.DownvotePost)
 	}
