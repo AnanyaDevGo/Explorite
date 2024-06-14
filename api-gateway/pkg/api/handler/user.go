@@ -52,6 +52,7 @@ func (uh *UserHandler) UserSignUp(c *gin.Context) {
 
 	user, err := uh.GRPC_Client.UserSignUp(userDetails)
 	if err != nil {
+		fmt.Println(err)
 		logrusLogger.Error("Error in user signup", err)
 		anerr := errors.New("error in services")
 		errs := response.ClientResponse(http.StatusInternalServerError, "Cannot authenticate user", nil, anerr.Error())
