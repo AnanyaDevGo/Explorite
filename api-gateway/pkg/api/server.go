@@ -21,7 +21,6 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	router.Static("/static", "./static")
 	router.LoadHTMLGlob("template/*")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	
 
 	router.GET("/exit", videocallHandler.ExitPage)
 	router.GET("/error", videocallHandler.ErrorPage)
@@ -52,6 +51,9 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 		post.DELETE("/delete", postHandler.DeletePost)
 		post.PATCH("/upvote", postHandler.UpvotePost)
 		post.PATCH("/downvote", postHandler.DownvotePost)
+		post.POST("/comment", postHandler.CreateCommentPost)
+		post.PUT("/comment", postHandler.UpdateCommentPost)
+		post.DELETE("/comment", postHandler.DeleteCommentPost)
 	}
 	chat := router.Group("/user/chat")
 	{

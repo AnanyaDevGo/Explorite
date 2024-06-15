@@ -14,7 +14,7 @@ spec:
         app: friend_service
     spec:
       containers:
-      - image: ananyaep90/post-svc:2.2
+      - image: ananyaep90/post-svc:2.3
         name: post-svc-container
         ports:
         - containerPort: 8002
