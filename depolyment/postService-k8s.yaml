@@ -17,7 +17,7 @@ spec:
       - image: ananyaep90/post-svc:2.4
         name: post-svc-container
         ports:
-        - containerPort: 8002
+        - containerPort: 50051
         resources:
           limits:
             cpu: ".2"
@@ -37,7 +37,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 50053
-    targetPort: 50053
+  - port: 50051
+    targetPort: 50051
   selector:
     app: post_service

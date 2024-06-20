@@ -1,8 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: tweethere-notification-svc
-  namespace: tweethere
+  name: explorite-notification-svc
+  namespace: explorite
 spec:
   replicas: 1
   selector:
@@ -37,7 +37,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 50057
-    targetPort: 50057
+  - port: 50055
+    targetPort: 50055
   selector:
     app: notification_service

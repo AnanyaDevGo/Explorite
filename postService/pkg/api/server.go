@@ -15,6 +15,7 @@ type Server struct {
 }
 
 func NewGRPCServer(cfg config.Config, postServer post.PostServer) (*Server, error) {
+	fmt.Println(cfg.Port)
 	list, err := net.Listen("tcp", cfg.Port)
 	if err != nil {
 		return nil, err

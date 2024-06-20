@@ -16,7 +16,7 @@ spec:
         - image: ananyaep90/auth-svc:2.2
           name: auth-svc-container
           ports:
-            - containerPort: 8001
+            - containerPort: 50052
           resources:
             limits:
               memory: 212Mi

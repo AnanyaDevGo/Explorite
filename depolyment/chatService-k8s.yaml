@@ -17,7 +17,7 @@ spec:
         - name: chat-svc-container
           image: ananyaep90/chat-svc:2.2
           ports:
-          -  containerPort: 8003
+          -  containerPort: 50054
           resources:
             limits:
               memory: 212Mi
