@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       labels: 
-        app: friend_service
+        app: post-service
     spec:
       containers:
       - image: ananyaep90/post-svc:2.4
