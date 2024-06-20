@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: explorite-post-svc
-  namespace: explorite
+  name: tweethere-notification-svc
+  namespace: tweethere
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: post-service
+      app: notification_service
   template:
     metadata:
       labels: 
-        app: friend_service
+        app: notification_service
     spec:
       containers:
-      - image: ananyaep90/post-svc:2.4
-        name: post-svc-container
+      - image: ananyaep90/notification-svc
+        name: notification-svc-container
         ports:
-        - containerPort: 8002
+        - containerPort: 50055
         resources:
           limits:
             cpu: ".2"
@@ -33,11 +33,11 @@ apiVersion: v1
 kind: Service
 metadata:
   namespace: explorite
-  name: post-service
+  name: notification-service
 spec:
   type: ClusterIP
   ports:
-  - port: 50053
-    targetPort: 50053
+  - port: 50057
+    targetPort: 50057
   selector:
-    app: post_service
+    app: notification_service
