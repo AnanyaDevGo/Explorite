@@ -15,7 +15,7 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler, postHandler *handler.PostHandler, chatHandler *handler.ChatHandler, videocallHandler *handler.VideoCallHandler) *ServerHTTP {
+func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.UserHandler, postHandler *handler.PostHandler, chatHandler *handler.ChatHandler, videocallHandler *handler.VideoCallHandler, notificationhandler *handler.NotificationHandler) *ServerHTTP {
 	router := gin.New()
 	router.Use(gin.Logger())
 	router.Static("/static", "./static")
@@ -59,6 +59,10 @@ func NewServerHTTP(adminHandler *handler.AdminHandler, userHandler *handler.User
 	{
 		chat.GET("", chatHandler.FriendMessage)
 		chat.GET("/message", chatHandler.GetChat)
+	}
+	notificationmanagement := router.Group("/noti")
+	{
+		notificationmanagement.GET("", notificationhandler.GetNotification)
 	}
 
 	router.Use(middleware.AdminAuthMiddleware())
