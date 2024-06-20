@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: chat-svc-container
-          image: ananyaep90/chat-svc:2.2
+          image: ananyaep90/chat-svc:3.1
           ports:
           -  containerPort: 50054
           resources:

@@ -14,7 +14,7 @@ spec:
         app: notification_service
     spec:
       containers:
-      - image: ananyaep90/notification-svc
+      - image: ananyaep90/notification-svc:3.1
         name: notification-svc-container
         ports:
         - containerPort: 50055
