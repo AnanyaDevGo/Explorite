@@ -13,13 +13,13 @@ type Config struct {
 	DBPort         string `mapstructure:"DB_PORT"`
 	DBPassword     string `mapstructure:"DB_PASSWORD"`
 	Port           string `mapstructure:"PORT"`
-	KafkaPort      string `mapstructure:"KAFKA_PORT"`
-	KafkaTpic      string `mapstructure:"KAFKA_TOPIC"`
+	 KafkaBrokers   string `mapstructure:"KAFKA_BROKERS"`
+    KafkaTopic     string `mapstructure:"KAFKA_TOPIC"`
 	Explorite_Auth string `mapstructure:"Explorite_Auth"`
 }
 
 var envs = []string{
-	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "PORT", "KAFKA_PORT", "KAFKA_TOPIC", "Explorite_Auth",
+	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "PORT", "KAFKA_BROKERS", "KAFKA_TOPIC", "Explorite_Auth",
 }
 
 func LoadConfig() (Config, error) {
@@ -37,6 +37,6 @@ func LoadConfig() (Config, error) {
 	if err := viper.Unmarshal(&config); err != nil {
 		return config, err
 	}
-	fmt.Println("configggg", config)
+	fmt.Println("config", config)
 	return config, nil
 }
