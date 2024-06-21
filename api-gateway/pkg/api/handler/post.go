@@ -6,6 +6,7 @@ import (
 	"ExploriteGateway/pkg/utils/models"
 	"ExploriteGateway/pkg/utils/response"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -145,8 +146,10 @@ func (ph *PostHandler) EditPost(c *gin.Context) {
 		return
 	}
 	editPost.UserId = strconv.Itoa(userId)
+	fmt.Println("err post", userId)
 
 	if err := ph.GRPC_Client.EditPost(userId, editPost); err != nil {
+		fmt.Println("error handler", err)
 		logrusLogger.Error("Could not edit post", err)
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Could not edit post", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
@@ -171,25 +174,16 @@ func (ph *PostHandler) DeletePost(c *gin.Context) {
 	logrusLogger, logrusLogFile := logging.InitLogrusLogger("./Logging/explorite_gateway.log")
 	defer logrusLogFile.Close()
 
-	postID, exists := c.Get("postid")
-	if !exists {
-		err := errors.New("post ID is not present")
+	postID := c.Param("postid")
+	if postID == "" {
+		err := errors.New("post ID is empty")
 		logrusLogger.Error(err)
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
 		c.JSON(http.StatusBadRequest, errorRes)
 		return
 	}
 
-	postIDStr, ok := postID.(string)
-	if !ok || postIDStr == "" {
-		err := errors.New("post ID is empty or not a string")
-		logrusLogger.Error(err)
-		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())
-		c.JSON(http.StatusBadRequest, errorRes)
-		return
-	}
-
-	postIDInt, err := strconv.Atoi(postIDStr)
+	postIDInt, err := strconv.Atoi(postID)
 	if err != nil {
 		logrusLogger.Error("Invalid post ID", err)
 		errorRes := response.ClientResponse(http.StatusBadRequest, "Invalid post ID", nil, err.Error())

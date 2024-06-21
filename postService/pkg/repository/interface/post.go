@@ -8,9 +8,9 @@ import (
 type PostRepository interface {
 	AddPost(userID int, caption string, url string, mediaurl string) error
 	ListPost() ([]models.AddPost, error)
-	UpdatePostByID(postID int, updatedPost models.EditPost) error
+	UpdatePostByID(postID string, updatedPost models.EditPost) error
 	DeletePostByID(postID int) error
-	PostExists(postID int) (bool, error)
+	PostExists(postID string) (bool, error)
 	GetPostByID(postID int) (domain.Post, error)
 	// CheckIfPostSaved(postID int) (bool, error)
 	// SavePost(postID int) error

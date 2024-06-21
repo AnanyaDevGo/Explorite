@@ -71,12 +71,12 @@ func (ps *PostUseCase) ListPost() ([]models.AddPost, error) {
 
 	return posts, nil
 }
-func (ps *PostUseCase) EditPost(postID int, post models.EditPost) error {
-	if postID <= 0 {
-		return errors.New("invalid post ID")
+func (ps *PostUseCase) EditPost(userID int, post models.EditPost) error {
+	if userID <= 0 {
+		return errors.New("invalid user ID")
 	}
 
-	exists, err := ps.postRepository.PostExists(postID)
+	exists, err := ps.postRepository.PostExists(post.PostId)
 	if err != nil {
 		return err
 	}
@@ -88,7 +88,7 @@ func (ps *PostUseCase) EditPost(postID int, post models.EditPost) error {
 		return errors.New("caption cannot be empty")
 	}
 
-	err = ps.postRepository.UpdatePostByID(postID, post)
+	err = ps.postRepository.UpdatePostByID(post.PostId, post)
 	if err != nil {
 		return err
 	}
@@ -101,7 +101,7 @@ func (ps *PostUseCase) DeletePost(postID int) error {
 		return errors.New("invalid post ID")
 	}
 
-	exists, err := ps.postRepository.PostExists(postID)
+	exists, err := ps.postRepository.PostExists(strconv.Itoa(postID))
 	if err != nil {
 		return err
 	}
@@ -125,7 +125,7 @@ func (ps *PostUseCase) CreateCommentPost(postId, userId int, comment string) (bo
 		return false, errors.New("comment is required")
 	}
 
-	okP, err := ps.postRepository.PostExists(postId)
+	okP, err := ps.postRepository.PostExists(strconv.Itoa(postId))
 
 	if err != nil {
 		return false, err
@@ -176,6 +176,7 @@ func (ps *PostUseCase) UpdateCommentPost(commentId, postId, userId int, comment 
 }
 
 func (ps *PostUseCase) DeleteCommentPost(postId, userId, commentId int) (bool, error) {
+	fmt.Println("postidddd", postId)
 	if postId <= 0 {
 		return false, errors.New("postId is required")
 	}
@@ -211,7 +212,7 @@ func (ps *PostUseCase) UpvotePost(userID, postID int) error {
 
 	fmt.Println("posttttttt", postID)
 	fmt.Println("userrrrr ", userID)
-	exists, err := ps.postRepository.PostExists(postID)
+	exists, err := ps.postRepository.PostExists(strconv.Itoa(postID))
 	if err != nil {
 		return err
 	}
@@ -240,7 +241,7 @@ func (ps *PostUseCase) DownvotePost(userID, postID int) error {
 		return errors.New("invalid post ID")
 	}
 
-	exists, err := ps.postRepository.PostExists(postID)
+	exists, err := ps.postRepository.PostExists(strconv.Itoa(postID))
 	if err != nil {
 		return err
 	}

@@ -42,7 +42,7 @@ func (pr *postRepository) ListPost() ([]models.AddPost, error) {
 	return posts, nil
 }
 
-func (pr *postRepository) UpdatePostByID(postID int, updatedPost models.EditPost) error {
+func (pr *postRepository) UpdatePostByID(postID string, updatedPost models.EditPost) error {
 	err := pr.DB.Exec("UPDATE posts SET caption = ? WHERE id = ?", updatedPost.Caption, postID).Error
 	if err != nil {
 		return err
@@ -59,15 +59,17 @@ func (pr *postRepository) DeletePostByID(postID int) error {
 
 	return nil
 }
-func (pr *postRepository) PostExists(postID int) (bool, error) {
+func (pr *postRepository) PostExists(postID string) (bool, error) {
+	fmt.Println("postid", postID)
 
-	var count int64
+	var count int
 	query := "SELECT COUNT(*) FROM posts WHERE id = ?"
 
 	if err := pr.DB.Raw(query, postID).Scan(&count).Error; err != nil {
 		fmt.Println("errorrrrr", err)
 		return false, err
 	}
+	fmt.Println("count", count)
 
 	return count > 0, nil
 }

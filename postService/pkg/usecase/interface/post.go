@@ -7,7 +7,7 @@ import (
 type PostUsecase interface {
 	AddPost(post models.AddPost) error
 	ListPost() ([]models.AddPost, error)
-	EditPost(postId int, post models.EditPost) error
+	EditPost(userId int, post models.EditPost) error
 	DeletePost(postID int) error
 	//SavePost(postID int) error
 	//UnSavePost(postID int) error

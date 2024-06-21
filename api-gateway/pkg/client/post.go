@@ -76,18 +76,22 @@ func (pc *postClient) ListPost() ([]models.AddPost, error) {
 }
 
 func (pc *postClient) EditPost(id int, post models.EditPost) error {
+	fmt.Println("hereeeeeeee")
 	_, err := pc.Client.EditPost(context.Background(), &pb.EditPostRequest{
 		UserId:  int32(id),
 		Caption: post.Caption,
 		PostId:  post.PostId,
 	})
 	if err != nil {
+		fmt.Println("err", err)
 		return err
 	}
 	return nil
 }
 
 func (pc *postClient) DeletePost(id int) error {
+	fmt.Println("hereeee 2")
+	fmt.Println("iddddd", id)
 	_, err := pc.Client.DeletePost(context.Background(), &pb.DeletePostRequest{
 		PostId: int32(id),
 	})

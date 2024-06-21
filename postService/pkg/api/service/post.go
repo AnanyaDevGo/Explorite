@@ -21,7 +21,6 @@ func NewPostServer(usecase interfaces.PostUsecase) pb.PostServer {
 
 func (ps *PostServer) AddPost(ctx context.Context, req *pb.AddPostRequest) (*pb.AddPostResponse, error) {
 
-	fmt.Println("Hereeeeeeeeee")
 	post := models.AddPost{
 		Caption:  req.Caption,
 		UserId:   req.UserId,
