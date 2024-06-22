@@ -14,7 +14,7 @@ spec:
         app: post_service
     spec:
       containers:
-      - image: ananyaep90/post-svc:3.3
+      - image: ananyaep90/post-svc:3.4
         name: post-svc-container
         ports:
         - containerPort: 50051
