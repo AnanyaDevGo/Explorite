@@ -95,6 +95,7 @@ func (c *notificationRepository) ReadNotification(id int) (bool, error) {
 func (c *notificationRepository) IsNotificationExistOnUser(id, userId int) (bool, error) {
 	c.Logger.Info("IsNotificationExistOnUser at notificationRepository started")
 	var count int
+	fmt.Println("iddd", id, userId)
 	querry := `
 	select count(*) from notifications 
 	where id = ? and user_id =  ?

@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: pkg/pb/notification/auth.proto
 
-package notification
+package auth
 
 import (
 	context "context"
