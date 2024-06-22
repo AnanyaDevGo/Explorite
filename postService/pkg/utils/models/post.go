@@ -44,3 +44,8 @@ type Notification struct {
 	Message   string    `json:"Message"`
 	CreatedAt time.Time `json:"created_at"`
 }
+type UserData struct {
+	UserId   int    `json:"user_id"`
+	Username string `json:"username"`
+	Profile  string `json:"profile"`
+}

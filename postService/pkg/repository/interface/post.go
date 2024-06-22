@@ -23,4 +23,5 @@ type PostRepository interface {
 	UpvotePost(postID, userID int) error
 	DownvotePost(postID, userID int) error
 	IsPostvoted(postID int, userID int) (bool, error)
+	GetPostedUserID(id int) (int, error)
 }

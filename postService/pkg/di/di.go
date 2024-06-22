@@ -3,6 +3,7 @@ package di
 import (
 	server "postservice/pkg/api"
 	"postservice/pkg/api/service"
+	"postservice/pkg/client"
 	"postservice/pkg/config"
 	"postservice/pkg/db"
 	"postservice/pkg/repository"
@@ -15,7 +16,8 @@ func IntializeAPI(cfg config.Config) (*server.Server, error) {
 		return nil, err
 	}
 	postRepository := repository.NewPostRepository(gormDB)
-	postUseCase := usecase.NewPostUseCase(postRepository)
+	postclient := client.NewAuthClient(&cfg)
+	postUseCase := usecase.NewPostUseCase(postRepository, postclient)
 	postServiceServer := service.NewPostServer(postUseCase)
 
 	grpcServer, err := server.NewGRPCServer(cfg, postServiceServer)

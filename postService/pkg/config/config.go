@@ -14,10 +14,11 @@ type Config struct {
 	AWSRegion         string `mapstructure:"AWSRegion"`
 	KafkaBrokers      string `mapstructure:"KAFKA_BROKERS"`
 	KafkaTopic        string `mapstructure:"KAFKA_TOPIC"`
+	Explorite_Auth    string `mapstructure:"Explorite_Auth"`
 }
 
 var envs = []string{
-	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "PORT", "Access_key_ID", "Secret_access_key", "AWSRegion", "KAFKA_BROKERS", "KAFKA_TOPIC",
+	"DB_HOST", "DB_NAME", "DB_USER", "DB_PORT", "DB_PASSWORD", "PORT", "Access_key_ID", "Secret_access_key", "AWSRegion", "KAFKA_BROKERS", "KAFKA_TOPIC", "Explorite_Auth",
 }
 
 func LoadConfig() (Config, error) {

@@ -3,6 +3,7 @@ package usecase
 import (
 	"errors"
 	"fmt"
+	authface "postservice/pkg/client/interface"
 	"postservice/pkg/config"
 	"postservice/pkg/helper"
 	interfaces "postservice/pkg/repository/interface"
@@ -14,9 +15,10 @@ import (
 
 type PostUseCase struct {
 	postRepository interfaces.PostRepository
+	authclient     authface.Newauthclient
 }
 
-func NewPostUseCase(postRepository interfaces.PostRepository) *PostUseCase {
+func NewPostUseCase(postRepository interfaces.PostRepository, authface authface.Newauthclient) *PostUseCase {
 	return &PostUseCase{
 		postRepository: postRepository,
 	}
@@ -137,10 +139,21 @@ func (ps *PostUseCase) CreateCommentPost(postId, userId int, comment string) (bo
 	if err != nil {
 		return false, err
 	}
-	msg := fmt.Sprintf("%s Commented your post %d comment: %s", strconv.Itoa(userId), postId, comment)
+
+	userdata, err := ps.authclient.UserData(userId)
+	if err != nil {
+		return false, err
+	}
+	postedUserID, errr := ps.postRepository.GetPostedUserID(postId)
+	if errr != nil {
+		return false, err
+	}
+
+	msg := fmt.Sprintf("%s Commented your post %d comment: %s", userdata.Username, postId, comment)
 	helper.SendNotification(models.Notification{
-		UserID: userId,
-		PostID: postId,
+		UserID:   postedUserID,
+		SenderID: userId,
+		PostID:   postId,
 	}, []byte(msg))
 	return ok, nil
 
@@ -237,10 +250,19 @@ func (ps *PostUseCase) UpvotePost(userID, postID int) error {
 	if err != nil {
 		return err
 	}
-	msg := fmt.Sprintf("%s liked your postid %d", strconv.Itoa(userID), postID)
+	userdata, err := ps.authclient.UserData(userID)
+	if err != nil {
+		return err
+	}
+	postedUserID, errr := ps.postRepository.GetPostedUserID(postID)
+	if errr != nil {
+		return err
+	}
+	msg := fmt.Sprintf("%s liked your postid %d", userdata.Username, postID)
 	helper.SendNotification(models.Notification{
-		UserID: userID,
-		PostID: postID,
+		UserID:   postedUserID,
+		SenderID: userID,
+		PostID:   postID,
 	}, []byte(msg))
 
 	return nil
