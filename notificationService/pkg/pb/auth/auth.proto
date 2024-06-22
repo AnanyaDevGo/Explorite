@@ -1,28 +1,17 @@
 syntax = "proto3";
 
-package auth;
+package notification_auth;
 
 option go_package = "./pkg/pb/auth";
 
-service AuthService {
-    rpc CheckUserAvalilabilityWithUserID (CheckUserAvalilabilityWithUserIDRequest) returns (CheckUserAvalilabilityWithUserIDResponse){}
+service NotificationAuthService {
     rpc UserData (UserDataRequest) returns (UserDataResponse){}
 }
-
-message CheckUserAvalilabilityWithUserIDRequest {
-    int64 id = 1;
-}
-
-message CheckUserAvalilabilityWithUserIDResponse {
-    bool valid = 1;
-}
-
 message UserDataRequest{
-      int64 id = 1;
+    int64 userid=1;
 }
-
-message UserDataResponse {
-    int64 id = 1;
-    string username = 2;
-    string profile_photo = 3;
+message UserDataResponse{
+    int64 userid =1;
+    string username=2;
+    string profile=3;
 }

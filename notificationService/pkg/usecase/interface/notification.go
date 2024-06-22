@@ -2,7 +2,10 @@ package interfaces
 
 import "notificationService/pkg/utils/models"
 
-type NotiUseCase interface {
+type NotificationUseCase interface {
 	ConsumeNotification()
 	GetNotification(userid int, mod models.Pagination) ([]models.NotificationResponse, error)
+	ReadNotification(id, user_id int) (bool, error)
+	MarkAllAsRead(userId int) (bool, error)
+	GetAllNotifications(userId int) ([]models.AllNotificationResponse, error)
 }

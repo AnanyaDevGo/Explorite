@@ -1,50 +1,34 @@
 package client
 
 import (
-	"context"
 	"fmt"
+	"os"
+
+	logging "notificationService/Logging"
 	"notificationService/pkg/config"
 	pb "notificationService/pkg/pb/auth"
-	"notificationService/pkg/utils/models"
+	"github.com/sirupsen/logrus"
 
 	"google.golang.org/grpc"
 )
 
-type clientAuth struct {
-	Client pb.AuthServiceClient
+type authClient struct {
+	Client  pb.NotificationAuthServiceClient
+	Logger  *logrus.Logger
+	LogFile *os.File
 }
 
-func NewAuthClient(c *config.Config) *clientAuth {
-	cc, err := grpc.Dial(c.Explorite_Auth, grpc.WithInsecure())
-
+func NewAuthClient(cfg *config.Config) *authClient {
+	logger, logFile := logging.InitLogrusLogger("./Logging/notificationService.log")
+	grpcConnection, err := grpc.Dial(cfg.Explorite_Auth, grpc.WithInsecure())
 	if err != nil {
-		fmt.Println("Could not connect:", err)
+		fmt.Println("could not connect", err)
 	}
+	grpcClient := pb.NewNotificationAuthServiceClient(grpcConnection)
 
-	pbClient := pb.NewAuthServiceClient(cc)
-
-	return &clientAuth{
-		Client: pbClient,
+	return &authClient{
+		Client:  grpcClient,
+		Logger:  logger,
+		LogFile: logFile,
 	}
-}
-
-func (c *clientAuth) CheckUserAvalilabilityWithUserID(userID int) bool {
-	ok, _ := c.Client.CheckUserAvalilabilityWithUserID(context.Background(), &pb.CheckUserAvalilabilityWithUserIDRequest{
-		Id: int64(userID),
-	})
-	return ok.Valid
-}
-
-func (c *clientAuth) UserData(userID int) (models.UserData, error) {
-	data, err := c.Client.UserData(context.Background(), &pb.UserDataRequest{
-		Id: int64(userID),
-	})
-	if err != nil {
-		return models.UserData{}, err
-	}
-	return models.UserData{
-		UserId:   int(data.Id),
-		Username: data.Username,
-		Profile:  data.ProfilePhoto,
-	}, nil
 }

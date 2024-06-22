@@ -1,7 +1,5 @@
-package client
-
-import "notificationService/pkg/utils/models"
+package interfaces
 
 type Newauthclient interface {
-	UserData(userid int) (models.UserData, error)
+	// UserData(userid int)(models.UserData,error)
 }

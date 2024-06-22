@@ -1,53 +1,130 @@
 package client
 
 import (
+	"context"
+	"os"
+
+	logging "ExploriteGateway/Logging"
+
 	interfaces "ExploriteGateway/pkg/client/interface"
 	"ExploriteGateway/pkg/config"
-	pb "ExploriteGateway/pkg/pb/notification"
 	"ExploriteGateway/pkg/utils/models"
-	"context"
+
 	"fmt"
 
+	Pb "ExploriteGateway/pkg/pb/notification"
+
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 )
 
 type notificationClient struct {
-	client pb.NotificationServiceClient
+	Client  Pb.NotificationServiceClient
+	Logger  *logrus.Logger
+	LogFile *os.File
 }
 
 func NewNotificationClient(cfg config.Config) interfaces.NotificationClient {
-	grpcConn, err := grpc.Dial(cfg.ExploriteNotification, grpc.WithInsecure())
+	logger, logFile := logging.InitLogrusLogger("./Logging/ExploriteGateway.log")
+	grpcConnection, err := grpc.Dial(cfg.ExploriteNotification, grpc.WithInsecure())
+
 	if err != nil {
-		fmt.Println("could not connet", err)
+		fmt.Println("Could not Connect to Auth", err)
 	}
-	grpcClient := pb.NewNotificationServiceClient(grpcConn)
+	grpcClient := Pb.NewNotificationServiceClient(grpcConnection)
 	return &notificationClient{
-		client: grpcClient,
+		Client:  grpcClient,
+		Logger:  logger,
+		LogFile: logFile,
 	}
+
 }
 
-func (ad *notificationClient) GetNotification(userid int, pagin models.NotificationPagination) ([]models.NotificationResponse, error) {
-	data, err := ad.client.GetNotification(context.Background(), &pb.GetNotificationRequest{
+func (nc *notificationClient) GetNotification(userid int, mod models.NotificationPagination) ([]models.NotificationResponse, error) {
+	nc.Logger.Info("GetNotification at notificationClient started")
+	nc.Logger.Info("GetNotification at client started")
+
+	data, err := nc.Client.GetNotification(context.Background(), &Pb.GetNotificationRequest{
 		UserID: int64(userid),
-		Limit:  int64(pagin.Limit),
-		Offset: int64(pagin.Offset),
+		Limit:  int64(mod.Limit),
+		Offset: int64(mod.Offset),
 	})
 	if err != nil {
+		nc.Logger.Error("error from client ", err)
 		return []models.NotificationResponse{}, err
-
 	}
+	nc.Logger.Info("GetNotification at client finished")
 	var response []models.NotificationResponse
-
 	for _, v := range data.Notification {
-		notificationresponse := models.NotificationResponse{
+		notificationResponse := models.NotificationResponse{
+			ID:        int(v.Id),
 			UserID:    int(v.UserId),
 			Username:  v.Username,
-			Profile:   v.Profile,
+			PostID:    int(v.PostId),
 			Message:   v.Message,
 			CreatedAt: v.Time,
 		}
-		response = append(response, notificationresponse)
+		response = append(response, notificationResponse)
 	}
 	return response, nil
 
+}
+
+func (nc *notificationClient) ReadNotification(id, user_id int) (bool, error) {
+	nc.Logger.Info("ReadNotification at notificationClient started")
+	nc.Logger.Info("ReadNotification at client started")
+	ok, err := nc.Client.ReadNotification(context.Background(), &Pb.ReadNotificationRequest{
+		UserId: int64(user_id),
+		Id:     int64(id),
+	})
+	if err != nil {
+		nc.Logger.Error("error from GRPC call", err)
+		return false, err
+	}
+	nc.Logger.Info("ReadNotification at notificationClient finished")
+	nc.Logger.Info("ReadNotification at client finished")
+	return ok.Success, nil
+}
+
+func (nc *notificationClient) MarkAllAsRead(userId int) (bool, error) {
+	nc.Logger.Info("MarkAllAsRead at notificationClient started")
+	nc.Logger.Info("MarkAllAsRead at client started")
+	ok, err := nc.Client.MarkAllAsRead(context.Background(), &Pb.MarkAllAsReadRequest{
+		UserId: int64(userId),
+	})
+	if err != nil {
+		nc.Logger.Error("error from GRPC call", err)
+		return false, err
+	}
+	nc.Logger.Info("MarkAllAsRead at notificationClient finished")
+	nc.Logger.Info("MarkAllAsRead at client finished")
+	return ok.Success, nil
+}
+
+func (nc *notificationClient) GetAllNotifications(userId int) ([]models.AllNotificationResponse, error) {
+	nc.Logger.Info("GetAllNotifications at notificationClient started")
+	nc.Logger.Info("GetAllNotifications at client started")
+	data, err := nc.Client.GetAllNotifications(context.Background(), &Pb.GetAllNotificationsRequest{
+		UserId: int64(userId),
+	})
+	if err != nil {
+		nc.Logger.Error("error from GRPC call", err)
+		return nil, err
+	}
+	nc.Logger.Info("GetAllNotifications at notificationClient finished")
+	var response []models.AllNotificationResponse
+	for _, v := range data.Notification {
+		notificationResponse := models.AllNotificationResponse{
+			ID:        int(v.Id),
+			UserID:    int(v.UserId),
+			Username:  v.Username,
+			PostID:    int(v.PostId),
+			Message:   v.Message,
+			CreatedAt: v.Time,
+			Read:      v.Read,
+		}
+		response = append(response, notificationResponse)
+	}
+	nc.Logger.Info("GetAllNotifications at client finished")
+	return response, nil
 }

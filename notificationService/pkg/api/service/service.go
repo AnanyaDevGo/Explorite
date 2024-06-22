@@ -2,42 +2,119 @@ package service
 
 import (
 	"context"
+	"os"
+
+	logging "notificationService/Logging"
 	pb "notificationService/pkg/pb/notification"
 	interfaces "notificationService/pkg/usecase/interface"
 	"notificationService/pkg/utils/models"
+	"github.com/sirupsen/logrus"
 )
 
-type NotiServer struct {
-	notiUsecase interfaces.NotiUseCase
+type NotificationServer struct {
+	notificationUsecase interfaces.NotificationUseCase
 	pb.UnimplementedNotificationServiceServer
+	Logger  *logrus.Logger
+	LogFile *os.File
 }
 
-func NewnotiServer(usecase interfaces.NotiUseCase) pb.NotificationServiceServer {
-	return &NotiServer{
-		notiUsecase: usecase,
+func NewNotificationServer(usecase interfaces.NotificationUseCase) pb.NotificationServiceServer {
+	logger, logFile := logging.InitLogrusLogger("./Logging/connectHub_Notification.log")
+	return &NotificationServer{
+		notificationUsecase: usecase,
+		Logger:              logger,
+		LogFile:             logFile,
 	}
 }
 
-func (ad *NotiServer) GetNotification(ctx context.Context, req *pb.GetNotificationRequest) (*pb.GetNotificationResponse, error) {
-
+func (ad *NotificationServer) GetNotification(ctx context.Context, req *pb.GetNotificationRequest) (*pb.GetNotificationResponse, error) {
+	ad.Logger.Info("GetNotification at NotificationServer started")
 	userid := req.UserID
 
-	result, err := ad.notiUsecase.GetNotification(int(userid), models.Pagination{Limit: int(req.Limit), Offset: int(req.Offset)})
+	result, err := ad.notificationUsecase.GetNotification(int(userid), models.Pagination{Limit: int(req.Limit), Offset: int(req.Offset)})
 	if err != nil {
+		ad.Logger.Error("error from notificationUsecase", err)
 		return nil, err
 	}
+	ad.Logger.Info("GetNotification at notificationUsecase success")
 	var final []*pb.Message
 
 	for _, v := range result {
 		final = append(final, &pb.Message{
 			UserId:   int64(v.UserID),
 			Username: v.Username,
-			Profile:  v.Profile,
+			Id:       int64(v.ID),
 			Message:  v.Message,
 			Time:     v.CreatedAt,
+			PostId:   int64(v.PostID),
 		})
 	}
+	ad.Logger.Info("GetNotification at NotificationServer success")
 	return &pb.GetNotificationResponse{
+		Notification: final,
+	}, nil
+}
+
+func (ad *NotificationServer) ReadNotification(ctx context.Context, req *pb.ReadNotificationRequest) (*pb.ReadNotificationResponse, error) {
+	ad.Logger.Info("ReadNotification at NotificationServer started")
+	userid := req.UserId
+	id := req.Id
+
+	result, err := ad.notificationUsecase.ReadNotification(int(id), int(userid))
+	if err != nil {
+		ad.Logger.Error("error from notificationUsecase", err)
+		return nil, err
+	}
+	ad.Logger.Info("ReadNotification at notificationUsecase success")
+
+	ad.Logger.Info("GetNotification at NotificationServer success")
+	return &pb.ReadNotificationResponse{
+		Success: result,
+	}, nil
+}
+
+func (ad *NotificationServer) MarkAllAsRead(ctx context.Context, req *pb.MarkAllAsReadRequest) (*pb.MarkAllAsReadResponse, error) {
+	ad.Logger.Info("MarkAllAsRead at NotificationServer started")
+	userid := req.UserId
+
+	result, err := ad.notificationUsecase.MarkAllAsRead(int(userid))
+	if err != nil {
+		ad.Logger.Error("error from notificationUsecase", err)
+		return nil, err
+	}
+	ad.Logger.Info("MarkAllAsRead at notificationUsecase success")
+
+	ad.Logger.Info("MarkAllAsRead at NotificationServer success")
+	return &pb.MarkAllAsReadResponse{
+		Success: result,
+	}, nil
+}
+
+func (ad *NotificationServer) GetAllNotifications(ctx context.Context, req *pb.GetAllNotificationsRequest) (*pb.GetAllNotificationsResponse, error) {
+	ad.Logger.Info("GetAllNotifications at NotificationServer started")
+	userid := req.UserId
+
+	result, err := ad.notificationUsecase.GetAllNotifications(int(userid))
+	if err != nil {
+		ad.Logger.Error("error from notificationUsecase", err)
+		return nil, err
+	}
+	ad.Logger.Info("GetAllNotifications at notificationUsecase success")
+	var final []*pb.AllMessage
+
+	for _, v := range result {
+		final = append(final, &pb.AllMessage{
+			UserId:   int64(v.UserID),
+			Username: v.Username,
+			Id:       int64(v.ID),
+			Message:  v.Message,
+			Time:     v.CreatedAt,
+			PostId:   int64(v.PostID),
+			Read:     v.Read,
+		})
+	}
+	ad.Logger.Info("GetAllNotifications at NotificationServer success")
+	return &pb.GetAllNotificationsResponse{
 		Notification: final,
 	}, nil
 }

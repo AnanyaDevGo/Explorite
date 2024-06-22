@@ -10,21 +10,22 @@ import (
 	"notificationService/pkg/usecase"
 )
 
+
 func InitializeApi(cfg config.Config) (*server.Server, error) {
 	gormDB, err := db.ConnectDatabase(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	notificationRepository := repository.NewnotiRepository(gormDB)
-	notificationclient := client.NewAuthClient(&cfg)
-	notificationUseCase := usecase.NewnotiUsecase(notificationRepository, notificationclient)
-	notificationServiceServer := service.NewnotiServer(notificationUseCase)
-	grpcserver, err := server.NewGRPCServer(cfg, notificationServiceServer)
+	notiRepository := repository.NewNotificationRepository(gormDB)
+	noticlient := client.NewAuthClient(&cfg)
+	notiUseCase := usecase.NewNotificationUsecase(notiRepository, noticlient)
+	notiServiceServer := service.NewNotificationServer(notiUseCase)
+	grpcserver, err := server.NewGRPCServer(cfg, notiServiceServer)
 
 	if err != nil {
 		return &server.Server{}, err
 	}
-	go notificationUseCase.ConsumeNotification()
+	go notiUseCase.ConsumeNotification()
 	return grpcserver, nil
 }

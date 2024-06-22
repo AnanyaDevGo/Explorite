@@ -106,3 +106,8 @@ var (
 
 	ErrInvalidPassword = errors.New("invalid password")
 )
+
+type UserDatas struct {
+	UserId   int    `json:"user_id"`
+	Username string `json:"username"`
+}

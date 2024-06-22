@@ -3,48 +3,53 @@ package client
 import (
 	"context"
 	"fmt"
+	"os"
+
+	logging "postservice/Logging"
 	"postservice/pkg/config"
 	pb "postservice/pkg/pb/auth"
 	"postservice/pkg/utils/models"
 
+	"github.com/sirupsen/logrus"
+
 	"google.golang.org/grpc"
 )
 
-type clientAuth struct {
-	Client pb.AuthServiceClient
+type authClient struct {
+	Client  pb.NotificationAuthServiceClient
+	Logger  *logrus.Logger
+	LogFile *os.File
 }
 
-func NewAuthClient(c *config.Config) *clientAuth {
-	cc, err := grpc.Dial(c.Explorite_Auth, grpc.WithInsecure())
+func NewAuthClient(cfg *config.Config) *authClient {
+	logger, logFile := logging.InitLogrusLogger("./Logging/connectHub_Post.log")
+	grpcConnection, err := grpc.Dial(cfg.Explorite_Auth, grpc.WithInsecure())
+	if err != nil {
+		fmt.Println("could not connect", err)
+	}
+	grpcClient := pb.NewNotificationAuthServiceClient(grpcConnection)
+
+	return &authClient{
+		Client:  grpcClient,
+		Logger:  logger,
+		LogFile: logFile,
+	}
+}
+
+func (ad *authClient) UserData(userid int) (models.UserData, error) {
+	ad.Logger.Info("UserData at authClient started")
+
+	data, err := ad.Client.UserData(context.Background(), &pb.UserDataRequest{
+		Id: int64(userid),
+	})
 
 	if err != nil {
-		fmt.Println("Could not connect:", err)
-	}
-
-	pbClient := pb.NewAuthServiceClient(cc)
-
-	return &clientAuth{
-		Client: pbClient,
-	}
-}
-
-func (c *clientAuth) CheckUserAvalilabilityWithUserID(userID int) bool {
-	ok, _ := c.Client.CheckUserAvalilabilityWithUserID(context.Background(), &pb.CheckUserAvalilabilityWithUserIDRequest{
-		Id: int64(userID),
-	})
-	return ok.Valid
-}
-
-func (c *clientAuth) UserData(userID int) (models.UserData, error) {
-	data, err := c.Client.UserData(context.Background(), &pb.UserDataRequest{
-		Id: int64(userID),
-	})
-	if err != nil {
+		ad.Logger.Error("error from authClient", err)
 		return models.UserData{}, err
 	}
+	ad.Logger.Info("UserData at authClient success")
 	return models.UserData{
 		UserId:   int(data.Id),
 		Username: data.Username,
-		Profile:  data.ProfilePhoto,
 	}, nil
 }

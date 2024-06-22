@@ -19,126 +19,127 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_CheckUserAvalilabilityWithUserID_FullMethodName = "/auth.AuthService/CheckUserAvalilabilityWithUserID"
-	AuthService_UserData_FullMethodName                         = "/auth.AuthService/UserData"
+	NotificationAuthService_CheckUserAvalilabilityWithUserID_FullMethodName = "/notification_auth.NotificationAuthService/CheckUserAvalilabilityWithUserID"
+	NotificationAuthService_UserData_FullMethodName                         = "/notification_auth.NotificationAuthService/UserData"
 )
 
-// AuthServiceClient is the client API for AuthService service.
+// NotificationAuthServiceClient is the client API for NotificationAuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AuthServiceClient interface {
+type NotificationAuthServiceClient interface {
 	CheckUserAvalilabilityWithUserID(ctx context.Context, in *CheckUserAvalilabilityWithUserIDRequest, opts ...grpc.CallOption) (*CheckUserAvalilabilityWithUserIDResponse, error)
 	UserData(ctx context.Context, in *UserDataRequest, opts ...grpc.CallOption) (*UserDataResponse, error)
 }
 
-type authServiceClient struct {
+type notificationAuthServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
-	return &authServiceClient{cc}
+func NewNotificationAuthServiceClient(cc grpc.ClientConnInterface) NotificationAuthServiceClient {
+	return &notificationAuthServiceClient{cc}
 }
 
-func (c *authServiceClient) CheckUserAvalilabilityWithUserID(ctx context.Context, in *CheckUserAvalilabilityWithUserIDRequest, opts ...grpc.CallOption) (*CheckUserAvalilabilityWithUserIDResponse, error) {
+func (c *notificationAuthServiceClient) CheckUserAvalilabilityWithUserID(ctx context.Context, in *CheckUserAvalilabilityWithUserIDRequest, opts ...grpc.CallOption) (*CheckUserAvalilabilityWithUserIDResponse, error) {
 	out := new(CheckUserAvalilabilityWithUserIDResponse)
-	err := c.cc.Invoke(ctx, AuthService_CheckUserAvalilabilityWithUserID_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, NotificationAuthService_CheckUserAvalilabilityWithUserID_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *authServiceClient) UserData(ctx context.Context, in *UserDataRequest, opts ...grpc.CallOption) (*UserDataResponse, error) {
+func (c *notificationAuthServiceClient) UserData(ctx context.Context, in *UserDataRequest, opts ...grpc.CallOption) (*UserDataResponse, error) {
 	out := new(UserDataResponse)
-	err := c.cc.Invoke(ctx, AuthService_UserData_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, NotificationAuthService_UserData_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// AuthServiceServer is the server API for AuthService service.
-// All implementations must embed UnimplementedAuthServiceServer
+// NotificationAuthServiceServer is the server API for NotificationAuthService service.
+// All implementations must embed UnimplementedNotificationAuthServiceServer
 // for forward compatibility
-type AuthServiceServer interface {
+type NotificationAuthServiceServer interface {
 	CheckUserAvalilabilityWithUserID(context.Context, *CheckUserAvalilabilityWithUserIDRequest) (*CheckUserAvalilabilityWithUserIDResponse, error)
 	UserData(context.Context, *UserDataRequest) (*UserDataResponse, error)
-	mustEmbedUnimplementedAuthServiceServer()
+	mustEmbedUnimplementedNotificationAuthServiceServer()
 }
 
-// UnimplementedAuthServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedAuthServiceServer struct {
+// UnimplementedNotificationAuthServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedNotificationAuthServiceServer struct {
 }
 
-func (UnimplementedAuthServiceServer) CheckUserAvalilabilityWithUserID(context.Context, *CheckUserAvalilabilityWithUserIDRequest) (*CheckUserAvalilabilityWithUserIDResponse, error) {
+func (UnimplementedNotificationAuthServiceServer) CheckUserAvalilabilityWithUserID(context.Context, *CheckUserAvalilabilityWithUserIDRequest) (*CheckUserAvalilabilityWithUserIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckUserAvalilabilityWithUserID not implemented")
 }
-func (UnimplementedAuthServiceServer) UserData(context.Context, *UserDataRequest) (*UserDataResponse, error) {
+func (UnimplementedNotificationAuthServiceServer) UserData(context.Context, *UserDataRequest) (*UserDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserData not implemented")
 }
-func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
+func (UnimplementedNotificationAuthServiceServer) mustEmbedUnimplementedNotificationAuthServiceServer() {
+}
 
-// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AuthServiceServer will
+// UnsafeNotificationAuthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to NotificationAuthServiceServer will
 // result in compilation errors.
-type UnsafeAuthServiceServer interface {
-	mustEmbedUnimplementedAuthServiceServer()
+type UnsafeNotificationAuthServiceServer interface {
+	mustEmbedUnimplementedNotificationAuthServiceServer()
 }
 
-func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
-	s.RegisterService(&AuthService_ServiceDesc, srv)
+func RegisterNotificationAuthServiceServer(s grpc.ServiceRegistrar, srv NotificationAuthServiceServer) {
+	s.RegisterService(&NotificationAuthService_ServiceDesc, srv)
 }
 
-func _AuthService_CheckUserAvalilabilityWithUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _NotificationAuthService_CheckUserAvalilabilityWithUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CheckUserAvalilabilityWithUserIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, in)
+		return srv.(NotificationAuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_CheckUserAvalilabilityWithUserID_FullMethodName,
+		FullMethod: NotificationAuthService_CheckUserAvalilabilityWithUserID_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, req.(*CheckUserAvalilabilityWithUserIDRequest))
+		return srv.(NotificationAuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, req.(*CheckUserAvalilabilityWithUserIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _AuthService_UserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _NotificationAuthService_UserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UserDataRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).UserData(ctx, in)
+		return srv.(NotificationAuthServiceServer).UserData(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_UserData_FullMethodName,
+		FullMethod: NotificationAuthService_UserData_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).UserData(ctx, req.(*UserDataRequest))
+		return srv.(NotificationAuthServiceServer).UserData(ctx, req.(*UserDataRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// NotificationAuthService_ServiceDesc is the grpc.ServiceDesc for NotificationAuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "auth.AuthService",
-	HandlerType: (*AuthServiceServer)(nil),
+var NotificationAuthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "notification_auth.NotificationAuthService",
+	HandlerType: (*NotificationAuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "CheckUserAvalilabilityWithUserID",
-			Handler:    _AuthService_CheckUserAvalilabilityWithUserID_Handler,
+			Handler:    _NotificationAuthService_CheckUserAvalilabilityWithUserID_Handler,
 		},
 		{
 			MethodName: "UserData",
-			Handler:    _AuthService_UserData_Handler,
+			Handler:    _NotificationAuthService_UserData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

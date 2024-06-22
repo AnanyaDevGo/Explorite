@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.12.4
-// source: pkg/pb/auth/auth.proto
+// source: pkg/pb/notification/auth.proto
 
-package auth
+package notification
 
 import (
 	context "context"
@@ -19,13 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	NotificationAuthService_UserData_FullMethodName = "/notification_auth.NotificationAuthService/UserData"
+	NotificationAuthService_CheckUserAvalilabilityWithUserID_FullMethodName = "/notification_auth.NotificationAuthService/CheckUserAvalilabilityWithUserID"
+	NotificationAuthService_UserData_FullMethodName                         = "/notification_auth.NotificationAuthService/UserData"
 )
 
 // NotificationAuthServiceClient is the client API for NotificationAuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type NotificationAuthServiceClient interface {
+	CheckUserAvalilabilityWithUserID(ctx context.Context, in *CheckUserAvalilabilityWithUserIDRequest, opts ...grpc.CallOption) (*CheckUserAvalilabilityWithUserIDResponse, error)
 	UserData(ctx context.Context, in *UserDataRequest, opts ...grpc.CallOption) (*UserDataResponse, error)
 }
 
@@ -35,6 +37,15 @@ type notificationAuthServiceClient struct {
 
 func NewNotificationAuthServiceClient(cc grpc.ClientConnInterface) NotificationAuthServiceClient {
 	return &notificationAuthServiceClient{cc}
+}
+
+func (c *notificationAuthServiceClient) CheckUserAvalilabilityWithUserID(ctx context.Context, in *CheckUserAvalilabilityWithUserIDRequest, opts ...grpc.CallOption) (*CheckUserAvalilabilityWithUserIDResponse, error) {
+	out := new(CheckUserAvalilabilityWithUserIDResponse)
+	err := c.cc.Invoke(ctx, NotificationAuthService_CheckUserAvalilabilityWithUserID_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *notificationAuthServiceClient) UserData(ctx context.Context, in *UserDataRequest, opts ...grpc.CallOption) (*UserDataResponse, error) {
@@ -50,6 +61,7 @@ func (c *notificationAuthServiceClient) UserData(ctx context.Context, in *UserDa
 // All implementations must embed UnimplementedNotificationAuthServiceServer
 // for forward compatibility
 type NotificationAuthServiceServer interface {
+	CheckUserAvalilabilityWithUserID(context.Context, *CheckUserAvalilabilityWithUserIDRequest) (*CheckUserAvalilabilityWithUserIDResponse, error)
 	UserData(context.Context, *UserDataRequest) (*UserDataResponse, error)
 	mustEmbedUnimplementedNotificationAuthServiceServer()
 }
@@ -58,6 +70,9 @@ type NotificationAuthServiceServer interface {
 type UnimplementedNotificationAuthServiceServer struct {
 }
 
+func (UnimplementedNotificationAuthServiceServer) CheckUserAvalilabilityWithUserID(context.Context, *CheckUserAvalilabilityWithUserIDRequest) (*CheckUserAvalilabilityWithUserIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckUserAvalilabilityWithUserID not implemented")
+}
 func (UnimplementedNotificationAuthServiceServer) UserData(context.Context, *UserDataRequest) (*UserDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserData not implemented")
 }
@@ -73,6 +88,24 @@ type UnsafeNotificationAuthServiceServer interface {
 
 func RegisterNotificationAuthServiceServer(s grpc.ServiceRegistrar, srv NotificationAuthServiceServer) {
 	s.RegisterService(&NotificationAuthService_ServiceDesc, srv)
+}
+
+func _NotificationAuthService_CheckUserAvalilabilityWithUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckUserAvalilabilityWithUserIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(NotificationAuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: NotificationAuthService_CheckUserAvalilabilityWithUserID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(NotificationAuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, req.(*CheckUserAvalilabilityWithUserIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _NotificationAuthService_UserData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -101,10 +134,14 @@ var NotificationAuthService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*NotificationAuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CheckUserAvalilabilityWithUserID",
+			Handler:    _NotificationAuthService_CheckUserAvalilabilityWithUserID_Handler,
+		},
+		{
 			MethodName: "UserData",
 			Handler:    _NotificationAuthService_UserData_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "pkg/pb/auth/auth.proto",
+	Metadata: "pkg/pb/notification/auth.proto",
 }
