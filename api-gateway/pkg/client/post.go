@@ -22,6 +22,7 @@ func NewPostClient(cfg config.Config) (interfaces.PostClient, error) {
 	fmt.Println("auth", cfg.ExploritePost)
 	grpcConnection, err := grpc.Dial(cfg.ExploritePost, grpc.WithInsecure())
 	if err != nil {
+		fmt.Println("dial error", err)
 		return nil, err
 	}
 

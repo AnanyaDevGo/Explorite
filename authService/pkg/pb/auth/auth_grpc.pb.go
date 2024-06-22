@@ -4,7 +4,7 @@
 // - protoc             v3.12.4
 // source: pkg/pb/auth/auth.proto
 
-package authh
+package auth
 
 import (
 	context "context"
@@ -19,17 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_DoesUserExist_FullMethodName = "/admin.AuthService/DoesUserExist"
-	AuthService_FindUserName_FullMethodName  = "/admin.AuthService/FindUserName"
-	AuthService_UserData_FullMethodName      = "/admin.AuthService/UserData"
+	AuthService_CheckUserAvalilabilityWithUserID_FullMethodName = "/auth.AuthService/CheckUserAvalilabilityWithUserID"
+	AuthService_UserData_FullMethodName                         = "/auth.AuthService/UserData"
 )
 
 // AuthServiceClient is the client API for AuthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
-	DoesUserExist(ctx context.Context, in *DoesUserExistRequest, opts ...grpc.CallOption) (*DoesUserExistResponse, error)
-	FindUserName(ctx context.Context, in *FindUserNameRequest, opts ...grpc.CallOption) (*FindUserNameResponse, error)
+	CheckUserAvalilabilityWithUserID(ctx context.Context, in *CheckUserAvalilabilityWithUserIDRequest, opts ...grpc.CallOption) (*CheckUserAvalilabilityWithUserIDResponse, error)
 	UserData(ctx context.Context, in *UserDataRequest, opts ...grpc.CallOption) (*UserDataResponse, error)
 }
 
@@ -41,18 +39,9 @@ func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
 	return &authServiceClient{cc}
 }
 
-func (c *authServiceClient) DoesUserExist(ctx context.Context, in *DoesUserExistRequest, opts ...grpc.CallOption) (*DoesUserExistResponse, error) {
-	out := new(DoesUserExistResponse)
-	err := c.cc.Invoke(ctx, AuthService_DoesUserExist_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *authServiceClient) FindUserName(ctx context.Context, in *FindUserNameRequest, opts ...grpc.CallOption) (*FindUserNameResponse, error) {
-	out := new(FindUserNameResponse)
-	err := c.cc.Invoke(ctx, AuthService_FindUserName_FullMethodName, in, out, opts...)
+func (c *authServiceClient) CheckUserAvalilabilityWithUserID(ctx context.Context, in *CheckUserAvalilabilityWithUserIDRequest, opts ...grpc.CallOption) (*CheckUserAvalilabilityWithUserIDResponse, error) {
+	out := new(CheckUserAvalilabilityWithUserIDResponse)
+	err := c.cc.Invoke(ctx, AuthService_CheckUserAvalilabilityWithUserID_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,8 +61,7 @@ func (c *authServiceClient) UserData(ctx context.Context, in *UserDataRequest, o
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
-	DoesUserExist(context.Context, *DoesUserExistRequest) (*DoesUserExistResponse, error)
-	FindUserName(context.Context, *FindUserNameRequest) (*FindUserNameResponse, error)
+	CheckUserAvalilabilityWithUserID(context.Context, *CheckUserAvalilabilityWithUserIDRequest) (*CheckUserAvalilabilityWithUserIDResponse, error)
 	UserData(context.Context, *UserDataRequest) (*UserDataResponse, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
@@ -82,11 +70,8 @@ type AuthServiceServer interface {
 type UnimplementedAuthServiceServer struct {
 }
 
-func (UnimplementedAuthServiceServer) DoesUserExist(context.Context, *DoesUserExistRequest) (*DoesUserExistResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DoesUserExist not implemented")
-}
-func (UnimplementedAuthServiceServer) FindUserName(context.Context, *FindUserNameRequest) (*FindUserNameResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindUserName not implemented")
+func (UnimplementedAuthServiceServer) CheckUserAvalilabilityWithUserID(context.Context, *CheckUserAvalilabilityWithUserIDRequest) (*CheckUserAvalilabilityWithUserIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckUserAvalilabilityWithUserID not implemented")
 }
 func (UnimplementedAuthServiceServer) UserData(context.Context, *UserDataRequest) (*UserDataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserData not implemented")
@@ -104,38 +89,20 @@ func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
 	s.RegisterService(&AuthService_ServiceDesc, srv)
 }
 
-func _AuthService_DoesUserExist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DoesUserExistRequest)
+func _AuthService_CheckUserAvalilabilityWithUserID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckUserAvalilabilityWithUserIDRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).DoesUserExist(ctx, in)
+		return srv.(AuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_DoesUserExist_FullMethodName,
+		FullMethod: AuthService_CheckUserAvalilabilityWithUserID_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).DoesUserExist(ctx, req.(*DoesUserExistRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _AuthService_FindUserName_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindUserNameRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(AuthServiceServer).FindUserName(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: AuthService_FindUserName_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).FindUserName(ctx, req.(*FindUserNameRequest))
+		return srv.(AuthServiceServer).CheckUserAvalilabilityWithUserID(ctx, req.(*CheckUserAvalilabilityWithUserIDRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -162,16 +129,12 @@ func _AuthService_UserData_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "admin.AuthService",
+	ServiceName: "auth.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "DoesUserExist",
-			Handler:    _AuthService_DoesUserExist_Handler,
-		},
-		{
-			MethodName: "FindUserName",
-			Handler:    _AuthService_FindUserName_Handler,
+			MethodName: "CheckUserAvalilabilityWithUserID",
+			Handler:    _AuthService_CheckUserAvalilabilityWithUserID_Handler,
 		},
 		{
 			MethodName: "UserData",

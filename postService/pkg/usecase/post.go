@@ -21,6 +21,7 @@ type PostUseCase struct {
 func NewPostUseCase(postRepository interfaces.PostRepository, authface authface.Newauthclient) *PostUseCase {
 	return &PostUseCase{
 		postRepository: postRepository,
+		authclient:     authface,
 	}
 }
 

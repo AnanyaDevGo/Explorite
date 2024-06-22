@@ -13,7 +13,7 @@ func main() {
 		log.Fatal("cannot load config: ", configErr)
 	}
 
-	server, diErr := di.IntializeAPI(config)
+	server, diErr := di.InitializeAPI(config)
 
 	if diErr != nil {
 		log.Fatal("cannot start server: ", diErr)

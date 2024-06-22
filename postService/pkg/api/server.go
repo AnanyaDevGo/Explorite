@@ -29,6 +29,6 @@ func NewGRPCServer(cfg config.Config, postServer post.PostServer) (*Server, erro
 }
 
 func (c *Server) Start() error {
-	fmt.Println("grpc server listening on port :50053")
+	fmt.Println("grpc server listening on port :50051")
 	return c.server.Serve(c.listener)
 }

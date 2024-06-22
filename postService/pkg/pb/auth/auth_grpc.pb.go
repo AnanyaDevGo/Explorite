@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_CheckUserAvalilabilityWithUserID_FullMethodName = "/user.AuthService/CheckUserAvalilabilityWithUserID"
-	AuthService_UserData_FullMethodName                         = "/user.AuthService/UserData"
+	AuthService_CheckUserAvalilabilityWithUserID_FullMethodName = "/auth.AuthService/CheckUserAvalilabilityWithUserID"
+	AuthService_UserData_FullMethodName                         = "/auth.AuthService/UserData"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -129,7 +129,7 @@ func _AuthService_UserData_Handler(srv interface{}, ctx context.Context, dec fun
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "user.AuthService",
+	ServiceName: "auth.AuthService",
 	HandlerType: (*AuthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

@@ -9,21 +9,19 @@ import (
 	"postservice/pkg/repository"
 	"postservice/pkg/usecase"
 )
+func InitializeAPI(cfg config.Config) (*server.Server, error) {
+    gormDB, err := db.ConnectDatabase(cfg)
+    if err != nil {
+        return nil, err
+    }
+    postRepository := repository.NewPostRepository(gormDB)
+    postclient := client.NewAuthClient(&cfg)
+    postUseCase := usecase.NewPostUseCase(postRepository, postclient)
+    postServiceServer := service.NewPostServer(postUseCase)
 
-func IntializeAPI(cfg config.Config) (*server.Server, error) {
-	gormDB, err := db.ConnectDatabase(cfg)
-	if err != nil {
-		return nil, err
-	}
-	postRepository := repository.NewPostRepository(gormDB)
-	postclient := client.NewAuthClient(&cfg)
-	postUseCase := usecase.NewPostUseCase(postRepository, postclient)
-	postServiceServer := service.NewPostServer(postUseCase)
-
-	grpcServer, err := server.NewGRPCServer(cfg, postServiceServer)
-	if err != nil {
-		return &server.Server{}, err
-	}
-	return grpcServer, nil
-
+    grpcServer, err := server.NewGRPCServer(cfg, postServiceServer)
+    if err != nil {
+        return nil, err
+    }
+    return grpcServer, nil
 }
