@@ -137,6 +137,11 @@ func (ps *PostUseCase) CreateCommentPost(postId, userId int, comment string) (bo
 	if err != nil {
 		return false, err
 	}
+	msg := fmt.Sprintf("%s Commented your post %d comment: %s", strconv.Itoa(userId), postId, comment)
+	helper.SendNotification(models.Notification{
+		UserID: userId,
+		PostID: postId,
+	}, []byte(msg))
 	return ok, nil
 
 }
@@ -232,6 +237,11 @@ func (ps *PostUseCase) UpvotePost(userID, postID int) error {
 	if err != nil {
 		return err
 	}
+	msg := fmt.Sprintf("%s liked your postid %d", strconv.Itoa(userID), postID)
+	helper.SendNotification(models.Notification{
+		UserID: userID,
+		PostID: postID,
+	}, []byte(msg))
 
 	return nil
 }

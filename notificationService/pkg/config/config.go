@@ -13,8 +13,8 @@ type Config struct {
 	DBPort         string `mapstructure:"DB_PORT"`
 	DBPassword     string `mapstructure:"DB_PASSWORD"`
 	Port           string `mapstructure:"PORT"`
-	 KafkaBrokers   string `mapstructure:"KAFKA_BROKERS"`
-    KafkaTopic     string `mapstructure:"KAFKA_TOPIC"`
+	KafkaBrokers   string `mapstructure:"KAFKA_BROKERS"`
+	KafkaTopic     string `mapstructure:"KAFKA_TOPIC"`
 	Explorite_Auth string `mapstructure:"Explorite_Auth"`
 }
 
